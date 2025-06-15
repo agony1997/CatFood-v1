@@ -1,0 +1,16 @@
+version: '3.8'                       # 指定 docker-compose 文件版本，決定可用語法
+services:                            # 定義多個服務（容器）
+  mysql-db:                          # 服務名稱（自訂，之後用 docker-compose 指令控制）
+    image: mysql:8.0                 # 使用的映像檔（可用版本號）
+    container_name: mysql-db         # 容器名稱（方便管理）
+    environment:                     # 設定環境變數，常用來設定資料庫帳號密碼等
+      MYSQL_ROOT_PASSWORD: root123  # root 帳號密碼
+      MYSQL_DATABASE: catDb          # 啟動時建立的資料庫名稱
+      MYSQL_USER: a03046578          # 新增的使用者名稱
+      MYSQL_PASSWORD: pass1234       # 使用者密碼
+    ports:                           # 端口映射，主機 port:容器 port
+      - "3306:3306"                  # 本機 3306 連到容器內 3306 (MySQL 預設)
+    volumes:                         # 持久化資料設定（把容器內資料存到本機或 docker volume）
+      - mysql-data:/var/lib/mysql    # mysql 資料庫資料存放位置
+volumes:                             # 定義命名卷（volume），用來持久化資料
+  mysql-data:
