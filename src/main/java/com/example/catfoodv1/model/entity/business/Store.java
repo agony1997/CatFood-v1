@@ -1,19 +1,32 @@
 package com.example.catfoodv1.model.entity.business;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.example.catfoodv1.model.Auditable;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
+@EqualsAndHashCode(of = "storeCode", callSuper = false)
 @Data
 @Entity
-public class Store {
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "store")
+public class Store extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    private String name; // 商店名稱
-    private String websiteUrl; // 網站URL
+
+    @NotNull
+    @Column(nullable = false, unique = true)
+    private String storeCode;
+
+    @NotNull
+    private String storeName;
+
+    private String websiteUrl;
 }

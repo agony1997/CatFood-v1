@@ -1,9 +1,10 @@
 package com.example.catfoodv1.service.auth;
 
-import com.example.catfoodv1.dto.UserDto;
+import com.example.catfoodv1.model.dto.UserDto;
+import com.example.catfoodv1.model.entity.auth.Account;
 import com.example.catfoodv1.model.entity.auth.Role;
-import com.example.catfoodv1.model.entity.auth.User;
 import com.example.catfoodv1.repo.auth.UserRepository;
+import com.vaadin.flow.component.UI;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -34,8 +35,8 @@ public class SecurityService {
      * 獲取當前登入使用者的顯示名稱 (Username)。
      * @return 如果使用者已登入，則返回其顯示名稱；否則返回空的 Optional。
      */
-    public Optional<String> getLoginUsername() {
-        return getAuthenticatedUserEntity().map(User::getUsername);
+    public Optional<String> getLoginUserName() {
+        return getAuthenticatedUserEntity().map(Account::getDisplayName);
     }
 
     /**
@@ -45,7 +46,7 @@ public class SecurityService {
     public Set<String> getLoginRoles() {
         return getAuthenticatedUserEntity()
                 .map(user -> user.getRoles().stream()
-                        .map(Role::getName)
+                        .map(Role::getRoleCode)
                         .collect(Collectors.toSet()))
                 .orElse(Collections.emptySet());
     }
@@ -54,14 +55,18 @@ public class SecurityService {
      * 獲取當前登入的使用者實體（內部使用）。
      * @return 如果使用者已登入，則返回包含 User 的 Optional；否則返回空的 Optional。
      */
-    public Optional<User> getAuthenticatedUserEntity() {
+    public Optional<Account> getAuthenticatedUserEntity() {
         var principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (principal instanceof UserDetails) {
-            String email = ((UserDetails) principal).getUsername();
-            return userRepository.findByEmail(email);
+            String accountCode = ((UserDetails) principal).getUsername();
+            return userRepository.findByAccountCode(accountCode);
         }
 
         return Optional.empty();
+    }
+
+    public void logout() {
+        UI.getCurrent().getPage().setLocation("/logout");
     }
 }

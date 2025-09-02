@@ -1,28 +1,37 @@
 package com.example.catfoodv1.model.entity.product;
 
-import com.example.catfoodv1.model.entity.auth.User;
+import com.example.catfoodv1.model.Auditable;
+import com.example.catfoodv1.model.entity.auth.Account;
 import jakarta.persistence.*;
-import lombok.Data;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Data
+@EqualsAndHashCode(of = {"product", "account"}, callSuper = false)
+@Getter
+@Setter
+@ToString(exclude = {"product", "account"})
 @Entity
-public class ProductReview {
-
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "product_review")
+public class ProductReview extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @NotNull
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product; // 關聯的產品
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user; // 評論者
+    @NotNull
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "account_id", nullable = false)
+    private Account account; // 評論者
 
+    @NotNull
     @Column(nullable = false)
     private Integer rating; // 評分 (例如 1 到 5)
 
@@ -31,5 +40,4 @@ public class ProductReview {
     @Lob // For longer text
     private String comment; // 評論內容
 
-    private LocalDateTime createdAt; // 建立時間
 }

@@ -1,4 +1,4 @@
-package com.example.catfoodv1.dto;
+package com.example.catfoodv1.model.dto;
 
 import com.example.catfoodv1.model.entity.product.ProductReview;
 import lombok.Data;
@@ -24,10 +24,10 @@ public class ProductReviewDto {
         dto.setRating(review.getRating());
         dto.setTitle(review.getTitle());
         dto.setComment(review.getComment());
-        dto.setCreatedAt(review.getCreatedAt());
+        dto.setCreatedAt(review.getCreateDT());
         // 從關聯的 User 實體中獲取顯示名稱
-        if (review.getUser() != null) {
-            dto.setAuthorUsername(review.getUser().getUsername());
+        if (review.getAccount() != null) {
+            dto.setAuthorUsername(review.getAccount().getDisplayName());
         }
         return dto;
     }

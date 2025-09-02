@@ -1,25 +1,33 @@
 package com.example.catfoodv1.model.entity.auth;
 
+import com.example.catfoodv1.model.Auditable;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 
 import java.util.UUID;
 
+@EqualsAndHashCode(of = "roleCode", callSuper = false)
 @Data
 @Entity
 @NoArgsConstructor
-@Table(name = "roles")
-public class Role {
+@AllArgsConstructor
+@Table(name = "role")
+public class Role extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @NotNull
     @Column(unique = true, nullable = false)
-    private String name; // 角色名稱
+    private String roleCode;
 
-    public Role(String name) {
-        this.name = name;
+    @Column(nullable = false)
+    private String roleName;
+
+    public Role(String roleCode, String roleName) {
+        this.roleCode = roleCode;
+        this.roleName = roleName;
     }
 }

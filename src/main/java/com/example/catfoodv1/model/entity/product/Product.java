@@ -1,9 +1,10 @@
 package com.example.catfoodv1.model.entity.product;
 
+import com.example.catfoodv1.model.Auditable;
 import com.example.catfoodv1.model.entity.business.Brand;
-import com.example.catfoodv1.model.entity.product.ProductPriceHistory;
 import jakarta.persistence.*;
-import lombok.Data;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,25 +13,32 @@ import java.util.UUID;
 /**
  * 採用單表繼承策略，允許子類別（如 DryFood 或 CannedFood）共用同一表格。
  */
-@Data
+@EqualsAndHashCode(of = "productCode", callSuper = false)
+@Getter
+@Setter
+@ToString(exclude = {"brand", "tags", "reviews", "variants"})
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "product")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "product_type", discriminatorType = DiscriminatorType.STRING)
-public abstract class Product {
+public abstract class Product extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @NotNull
+    @Column(nullable = false, unique = true)
     private String productCode; // 產品代碼
 
+    @NotNull
     private String productName; // 產品名稱
 
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "brand_id")
+    @JoinColumn(name = "brand_id", nullable = false)
     private Brand brand; // 品牌
-
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<ProductPriceHistory> priceHistory = new ArrayList<>(); // 價格歷史
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "product_tag", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
@@ -38,6 +46,9 @@ public abstract class Product {
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductReview> reviews = new ArrayList<>(); // 產品評論
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductVariant> variants = new ArrayList<>(); // 產品規格 (SKUs)
 }
 
 //  JPA 的 @Inheritance 標籤用於指定實體類別的繼承結構如何映射到資料庫表格。

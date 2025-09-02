@@ -1,21 +1,33 @@
 package com.example.catfoodv1.model.entity.business;
 
+import com.example.catfoodv1.model.Auditable;
 import jakarta.persistence.*;
-import lombok.Data;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Data
+@EqualsAndHashCode(of = "companyCode", callSuper = false)
+@Getter
+@Setter
+@ToString(exclude = "brands")
 @Entity
-public class Company {
-
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "company")
+public class Company extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private String name; // 公司名稱
+    @NotNull
+    @Column(nullable = false, unique = true)
+    private String companyCode;
+
+    @NotNull
+    private String companyName;
 
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Brand> brands = new ArrayList<>(); // 旗下品牌
