@@ -22,19 +22,19 @@ import java.time.LocalDateTime;
 public abstract class Auditable {
 
     @CreatedDate
-    @Column(name = "create_dt", nullable = false, updatable = false)
+    @Column(name = "create_dt", updatable = false)
     private LocalDateTime createDT;
 
     @LastModifiedDate
-    @Column(name = "update_dt", nullable = false)
+    @Column(name = "update_dt")
     private LocalDateTime updateDT;
 
     @CreatedBy
-    @Column(name = "creator", nullable = false, updatable = false)
+    @Column(name = "creator", updatable = false)
     private String creator;
 
     @LastModifiedBy
-    @Column(name = "updater", nullable = false)
+    @Column(name = "updater")
     private String updater;
 
 }
