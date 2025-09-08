@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import java.util.Set;
 
 @Component
-@Profile("h2") // 只在 dev 環境下執行
+@Profile("h2")
 public class DataInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;
@@ -30,9 +30,9 @@ public class DataInitializer implements CommandLineRunner {
         // 建立角色
         Role userRole = createRoleIfNotFound("ROLE_USER", "一般使用者");
         Role adminRole = createRoleIfNotFound("ROLE_ADMIN", "管理員");
-
         // 建立管理員帳號
-        createUserIfNotFound("admin", "admin@example.com", "admin", "Admin User", Set.of(adminRole, userRole));
+        createUserIfNotFound("admin", "admin@example.com", "123", "Agony", Set.of(adminRole, userRole));
+        createUserIfNotFound("normal", "normal@example.com", "123", "User", Set.of(userRole));
     }
 
     private Role createRoleIfNotFound(String code, String name) {

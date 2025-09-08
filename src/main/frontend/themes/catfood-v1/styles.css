@@ -1,0 +1,9 @@
+.nav-link {
+  color: var(--lumo-secondary-text-color);
+  cursor: pointer;
+}
+
+.nav-link[disabled] {
+  color: var(--lumo-primary-text-color);
+  pointer-events: none;
+}
