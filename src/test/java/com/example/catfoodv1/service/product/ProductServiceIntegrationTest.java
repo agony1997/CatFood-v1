@@ -1,0 +1,79 @@
+package com.example.catfoodv1.service.product;
+
+import com.example.catfoodv1.model.entity.business.Brand;
+import com.example.catfoodv1.model.entity.business.Company;
+import com.example.catfoodv1.model.entity.product.Kibble;
+import com.example.catfoodv1.model.entity.product.Product;
+import com.example.catfoodv1.repo.business.BrandRepository;
+import com.example.catfoodv1.repo.business.CompanyRepository;
+import com.example.catfoodv1.repo.product.ProductRepository;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * 這是針對 ProductService 的整合測試。
+ * @SpringBootTest 會載入完整的 Spring Context，讓我們可以測試 Service 層到資料庫的完整流程。
+ * 這裡我們不再使用 Mockito，而是與真實的（或記憶體中的）資料庫進行互動。
+ */
+@SpringBootTest
+class ProductServiceIntegrationTest {
+
+    @Autowired
+    private ProductService productService;
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
+    private BrandRepository brandRepository;
+
+    @Autowired
+    private CompanyRepository companyRepository;
+
+    private Brand savedBrand;
+
+    @BeforeEach
+    void setUp() {
+        // 清理資料庫以確保測試隔離
+        productRepository.deleteAll();
+        brandRepository.deleteAll();
+        companyRepository.deleteAll();
+
+        // 建立必要的關聯資料
+        Company company = new Company();
+        company.setCompanyCode("TEST_COMP");
+        company.setCompanyName("測試公司");
+        Company savedCompany = companyRepository.save(company);
+
+        Brand brand = new Brand();
+        brand.setBrandCode("TEST_BRAND");
+        brand.setBrandName("測試品牌");
+        brand.setCompany(savedCompany);
+        savedBrand = brandRepository.save(brand);
+    }
+
+    @Test
+    void createProduct_shouldPersistProductInDatabase() {
+        // 準備：建立一個新的 Product 物件
+        Kibble newKibble = new Kibble();
+        newKibble.setProductCode("KIBBLE-001");
+        newKibble.setProductName("頂級測試乾糧");
+        newKibble.setBrand(savedBrand);
+
+        // 執行：呼叫 Service 方法
+        Product createdProduct = productService.createProduct(newKibble);
+
+        // 驗證：直接從資料庫中查找，確認資料已成功寫入
+        assertNotNull(createdProduct.getId());
+        Product foundProduct = productRepository.findById(createdProduct.getId()).orElse(null);
+        assertNotNull(foundProduct);
+        assertEquals("KIBBLE-001", foundProduct.getProductCode());
+        assertEquals("頂級測試乾糧", foundProduct.getProductName());
+    }
+}

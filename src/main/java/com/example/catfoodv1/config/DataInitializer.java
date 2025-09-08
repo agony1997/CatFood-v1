@@ -3,7 +3,7 @@ package com.example.catfoodv1.config;
 import com.example.catfoodv1.model.entity.auth.Account;
 import com.example.catfoodv1.model.entity.auth.Role;
 import com.example.catfoodv1.repo.auth.RoleRepository;
-import com.example.catfoodv1.repo.auth.UserRepository;
+import com.example.catfoodv1.repo.auth.AccountRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,12 +15,12 @@ import java.util.Set;
 @Profile("h2")
 public class DataInitializer implements CommandLineRunner {
 
-    private final UserRepository userRepository;
+    private final AccountRepository accountRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public DataInitializer(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
+    public DataInitializer(AccountRepository accountRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+        this.accountRepository = accountRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
     }
@@ -40,14 +40,14 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void createUserIfNotFound(String accountCode, String email, String password, String username, Set<Role> roles) {
-        if (userRepository.findByAccountCode(accountCode).isEmpty()) {
+        if (accountRepository.findByAccountCode(accountCode).isEmpty()) {
             Account user = new Account();
             user.setAccountCode(accountCode);
             user.setEmail(email);
             user.setPassword(passwordEncoder.encode(password)); // 加密密碼
             user.setDisplayName(username);
             user.setRoles(roles);
-            userRepository.save(user);
+            accountRepository.save(user);
         }
     }
 }

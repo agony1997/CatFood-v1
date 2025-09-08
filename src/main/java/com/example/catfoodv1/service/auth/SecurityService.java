@@ -3,7 +3,7 @@ package com.example.catfoodv1.service.auth;
 import com.example.catfoodv1.model.dto.UserDto;
 import com.example.catfoodv1.model.entity.auth.Account;
 import com.example.catfoodv1.model.entity.auth.Role;
-import com.example.catfoodv1.repo.auth.UserRepository;
+import com.example.catfoodv1.repo.auth.AccountRepository;
 import com.vaadin.flow.component.UI;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,10 +17,10 @@ import java.util.stream.Collectors;
 @Service
 public class SecurityService {
 
-    private final UserRepository userRepository;
+    private final AccountRepository accountRepository;
 
-    public SecurityService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public SecurityService(AccountRepository accountRepository) {
+        this.accountRepository = accountRepository;
     }
 
     /**
@@ -60,7 +60,7 @@ public class SecurityService {
 
         if (principal instanceof UserDetails) {
             String accountCode = ((UserDetails) principal).getUsername();
-            return userRepository.findByAccountCode(accountCode);
+            return accountRepository.findByAccountCode(accountCode);
         }
 
         return Optional.empty();

@@ -20,7 +20,7 @@ import java.util.Map;
 @UIScope
 @AnonymousAllowed
 @Layout
-public class MainLayout extends AppLayout implements BeforeEnterObserver {
+public class MainLayout extends AppLayout implements BeforeEnterObserver,AfterNavigationObserver {
     private final SecurityService securityService;
     private final HorizontalLayout loginArea;
     private final Map<Class<? extends Component>, RouterLink> navLinks = new HashMap<>();
@@ -46,7 +46,6 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
     public void beforeEnter(BeforeEnterEvent event) {
         // 更新登入狀態區域
         updateLoginArea();
-
         // 根據當前頁面，更新導覽列連結的啟用/禁用狀態
         Class<?> targetView = event.getNavigationTarget();
         navLinks.forEach((viewClass, link) ->
@@ -93,5 +92,10 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
         );
         routerLink.addClassName("nav-link");
         return routerLink;
+    }
+
+    @Override
+    public void afterNavigation(AfterNavigationEvent afterNavigationEvent) {
+        getUI().ifPresent(ui->ui.getPage().setTitle("咪貓"));
     }
 }
