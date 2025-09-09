@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import java.util.Set;
 
 @Component
-@Profile("h2")
+//@Profile("h2")
 public class DataInitializer implements CommandLineRunner {
 
     private final AccountRepository accountRepository;

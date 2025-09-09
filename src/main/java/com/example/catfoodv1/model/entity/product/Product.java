@@ -11,7 +11,9 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * 採用單表繼承策略，允許子類別（如 DryFood 或 CannedFood）共用同一表格。
+ * 產品實體
+ * 表格名稱: product
+ * 表格用途: 儲存所有產品的共用資訊，包含乾糧、濕糧等。採用單表繼承策略。
  */
 @EqualsAndHashCode(of = "productCode", callSuper = false)
 @Getter
@@ -24,29 +26,57 @@ import java.util.UUID;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "product_type", discriminatorType = DiscriminatorType.STRING)
 public abstract class Product extends Auditable {
+    /**
+     * 欄位名稱: id
+     * 欄位用途: 產品的唯一標識符 (UUID)
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    /**
+     * 欄位名稱: product_code
+     * 欄位用途: 產品的唯一代碼，用於業務邏輯。
+     */
     @NotNull
     @Column(nullable = false, unique = true)
     private String productCode; // 產品代碼
 
+    /**
+     * 欄位名稱: product_name
+     * 欄位用途: 產品的顯示名稱。
+     */
     @NotNull
     private String productName; // 產品名稱
 
+    /**
+     * 欄位名稱: brand_id
+     * 欄位用途: 關聯到品牌的外部索引鍵。
+     */
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "brand_id", nullable = false)
     private Brand brand; // 品牌
 
+    /**
+     * 欄位名稱: N/A (中介表格 product_tag)
+     * 欄位用途: 產品與標籤的多對多關聯。
+     */
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "product_tag", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private List<Tag> tags = new ArrayList<>(); // 標籤
 
+    /**
+     * 欄位名稱: N/A (由 product_review 表格的 product_id 關聯)
+     * 欄位用途: 產品的所有評論。
+     */
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductReview> reviews = new ArrayList<>(); // 產品評論
 
+    /**
+     * 欄位名稱: N/A (由 product_variant 表格的 product_id 關聯)
+     * 欄位用途: 產品的各種規格 (SKU)，例如不同重量或包裝。
+     */
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductVariant> variants = new ArrayList<>(); // 產品規格 (SKUs)
 }
