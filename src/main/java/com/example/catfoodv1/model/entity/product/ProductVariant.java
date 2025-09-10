@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -67,11 +66,11 @@ public class ProductVariant extends Auditable {
     private List<Ingredient> ingredients = new ArrayList<>(); // 主要成分
 
     /**
-     * 欄位名稱: package_weight_kg
-     * 欄位用途: 包裝的總重量 (公斤)。
+     * 欄位名稱: package_weight_grams
+     * 欄位用途: 包裝的總重量 (公克)。
      */
-    @Column(name = "package_weight_kg", precision = 10, scale = 3)
-    private BigDecimal packageWeightKg; // 包裝總重量 (公斤)
+    @Column(name = "package_weight_grams")
+    private Integer packageWeightGrams; // 包裝總重量 (公克)
 
     /**
      * 欄位名稱: pack_size

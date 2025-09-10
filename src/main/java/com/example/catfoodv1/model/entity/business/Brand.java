@@ -15,6 +15,7 @@ import java.util.UUID;
 @Setter
 @ToString(exclude = {"company", "products"})
 @Entity
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "brand")

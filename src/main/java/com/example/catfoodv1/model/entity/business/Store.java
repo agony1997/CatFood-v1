@@ -3,16 +3,14 @@ package com.example.catfoodv1.model.entity.business;
 import com.example.catfoodv1.model.Auditable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.UUID;
 
 @EqualsAndHashCode(of = "storeCode", callSuper = false)
 @Data
 @Entity
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "store")

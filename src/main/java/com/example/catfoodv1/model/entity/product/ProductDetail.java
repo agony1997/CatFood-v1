@@ -62,13 +62,6 @@ public class ProductDetail extends Auditable {
     private BigDecimal fatPercentage; // 脂肪 (%)
 
     /**
-     * 欄位名稱: fiber_percentage
-     * 欄位用途: 纖維含量百分比。
-     */
-    @Column(name = "fiber_percentage", precision = 5, scale = 2)
-    private BigDecimal fiberPercentage; // 纖維 (%)
-
-    /**
      * 欄位名稱: moisture_percentage
      * 欄位用途: 水分含量百分比。
      */
@@ -76,10 +69,10 @@ public class ProductDetail extends Auditable {
     private BigDecimal moisturePercentage; // 水分 (%)
 
     /**
-     * 欄位名稱: feeding_guide
-     * 欄位用途: 產品的餵食指南 (文本形式)。
+     * 欄位名稱: carbs_percentage
+     * 欄位用途: 碳水含量百分比。
      */
-    @Lob
-    @Column(name = "feeding_guide")
-    private String feedingGuide; // 餵食指南
+    @Column(name = "carbs_percentage", precision = 5, scale = 2)
+    private BigDecimal carbsPercentage; // 碳水 (%)
+
 }
