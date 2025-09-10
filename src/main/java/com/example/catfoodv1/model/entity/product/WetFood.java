@@ -2,11 +2,7 @@ package com.example.catfoodv1.model.entity.product;
 
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 /**
  * 濕糧產品實體
@@ -18,8 +14,9 @@ import lombok.ToString;
 @Setter
 @ToString(callSuper = true)
 @Entity
-@NoArgsConstructor
-/**
+@Builder
+@AllArgsConstructor
+/*
  * 區分值: WET_FOOD
  * 用途: 在 product 表格的 product_type 欄位中，標識這筆記錄為濕糧。
  */

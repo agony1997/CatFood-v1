@@ -61,7 +61,7 @@ public class ProductVariant extends Auditable {
      * 欄位名稱: N/A (中介表格 product_variant_ingredient)
      * 欄位用途: 此規格包含的主要成分。
      */
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany
     @JoinTable(name = "product_variant_ingredient", joinColumns = @JoinColumn(name = "product_variant_id"), inverseJoinColumns = @JoinColumn(name = "ingredient_id"))
     private List<Ingredient> ingredients = new ArrayList<>(); // 主要成分
 

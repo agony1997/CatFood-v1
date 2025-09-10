@@ -20,7 +20,6 @@ import java.util.UUID;
 @Setter
 @ToString(exclude = {"brand", "tags", "reviews", "variants"})
 @Entity
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "product")
@@ -63,7 +62,7 @@ public abstract class Product extends Auditable {
      * 欄位名稱: N/A (中介表格 product_tag)
      * 欄位用途: 產品與標籤的多對多關聯。
      */
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany
     @JoinTable(name = "product_tag", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private List<Tag> tags = new ArrayList<>(); // 標籤
 

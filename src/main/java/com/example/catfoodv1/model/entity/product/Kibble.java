@@ -14,12 +14,13 @@ import lombok.*;
 @Setter
 @ToString(callSuper = true)
 @Entity
-@NoArgsConstructor
-/**
+@Builder
+@AllArgsConstructor
+@DiscriminatorValue("KIBBLE")
+/*
  * 區分值: KIBBLE
  * 用途: 在 product 表格的 product_type 欄位中，標識這筆記錄為乾糧。
  */
-@DiscriminatorValue("KIBBLE")
 public class Kibble extends Product{
 
 }

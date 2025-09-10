@@ -10,7 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import java.util.Optional;
 
 @Configuration
-@EnableJpaAuditing(auditorAwareRef = "auditorProvider")
+@EnableJpaAuditing
 public class JpaAuditingConfiguration {
 
     @Bean
@@ -18,10 +18,10 @@ public class JpaAuditingConfiguration {
         return () -> {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
-                return Optional.of("system"); // 對於未登入的操作，或系統級操作，給予預設值
+                return Optional.of("System"); // For unauthenticated or system-level operations, provide a default value.
             }
-            // 假設你的 Spring Security Principal 就是 Account 物件或 UserDetails
-            return Optional.of(authentication.getName()); // 通常是 email 或 username
+            // Return the username of the currently logged-in user.
+            return Optional.of(authentication.getName());
         };
     }
 }
