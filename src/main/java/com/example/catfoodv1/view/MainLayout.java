@@ -1,6 +1,7 @@
 package com.example.catfoodv1.view;
 
 import com.example.catfoodv1.service.auth.SecurityService;
+import com.example.catfoodv1.view.wet.WetFoodView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.button.Button;
@@ -13,7 +14,7 @@ import com.vaadin.flow.spring.annotation.UIScope;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 @org.springframework.stereotype.Component
@@ -23,7 +24,7 @@ import java.util.Map;
 public class MainLayout extends AppLayout implements BeforeEnterObserver,AfterNavigationObserver {
     private final SecurityService securityService;
     private final HorizontalLayout loginArea;
-    private final Map<Class<? extends Component>, RouterLink> navLinks = new HashMap<>();
+    private final Map<Class<? extends Component>, RouterLink> navLinks = new LinkedHashMap<>();
 
     public MainLayout(@Autowired SecurityService securityService) {
         this.securityService = securityService;
@@ -70,8 +71,8 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver,AfterNa
 
     private HorizontalLayout createAndRegisterRouterArea() {
         HorizontalLayout layout = new HorizontalLayout();
-        navLinks.put(KibbleView.class, createRouterLink("飼料", KibbleView.class));
         navLinks.put(WetFoodView.class, createRouterLink("罐頭", WetFoodView.class));
+        navLinks.put(KibbleView.class, createRouterLink("飼料", KibbleView.class));
         navLinks.put(SandView.class, createRouterLink("貓砂", SandView.class));
 
         layout.add(navLinks.values().toArray(new RouterLink[0]));
