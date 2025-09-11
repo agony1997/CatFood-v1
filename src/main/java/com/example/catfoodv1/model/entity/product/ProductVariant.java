@@ -52,10 +52,10 @@ public class ProductVariant extends Auditable {
 
     /**
      * 欄位名稱: variant_display_name
-     * 欄位用途: 規格的顯示名稱，用於行銷 (例如: "幼貓雞肉", "八種魚配方")。
+     * 欄位用途: 口味名稱 ex: 田園火雞
      */
-    @Column(name = "variant_display_name")
-    private String variantDisplayName; // 規格的顯示/行銷名稱 (例如: "幼貓雞肉", "八種魚配方")
+    @Column(name = "variant_name")
+    private String variantName;
 
     /**
      * 欄位名稱: N/A (中介表格 product_variant_ingredient)
@@ -116,4 +116,5 @@ public class ProductVariant extends Auditable {
         }
         this.detail = detail;
     }
+
 }

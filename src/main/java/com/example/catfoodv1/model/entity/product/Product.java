@@ -47,7 +47,7 @@ public abstract class Product extends Auditable {
      * 欄位用途: 產品的顯示名稱。
      */
     @NotNull
-    private String productName; // 產品名稱
+    private String productName; // 產品名稱 例如: 鮮肉罐, 無穀田園系列
 
     /**
      * 欄位名稱: brand_id

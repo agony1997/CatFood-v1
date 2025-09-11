@@ -6,6 +6,7 @@ import com.example.catfoodv1.model.entity.business.Brand;
 import com.example.catfoodv1.model.entity.business.Company;
 import com.example.catfoodv1.model.entity.business.Store;
 import com.example.catfoodv1.model.entity.product.*;
+import com.example.catfoodv1.model.type.PackageUnit;
 import com.example.catfoodv1.repo.auth.AccountRepository;
 import com.example.catfoodv1.repo.auth.RoleRepository;
 import com.example.catfoodv1.repo.business.BrandRepository;
@@ -131,14 +132,16 @@ public class DataInitializer implements CommandLineRunner {
                     Kibble kibble = new Kibble();
                     kibble.setBrand(brand);
                     kibble.setProductCode("DOGCAT-001");
-                    kibble.setProductName("汪喵星球挑嘴無穀飼料");
+                    kibble.setProductName("鮮肉罐");
                     kibble.setTags(allTags.stream().filter(t -> t.getTagCode().equals("GRAIN_FREE")).toList());
 
                     ProductVariant variant = new ProductVariant();
-                    variant.setSku("DOGCAT-001-85G-1C");
+                    variant.setSku("DOGCAT-001-TUR85G-1C");
                     variant.setPackageWeightGrams(85);
+                    variant.setUnitOfMeasure(PackageUnit.CAN);
+                    variant.setPackSize(1);
                     variant.setProduct(kibble);
-                    variant.setVariantDisplayName("田園火雞");
+                    variant.setVariantName("田園火雞");
                     variant.setIngredients(allIngredients.stream().filter(i -> i.getIngredientCode().equals("TURKEY") || i.getIngredientCode().equals("CHICKEN")).toList());
 
                     ProductDetail detail = new ProductDetail();
@@ -148,17 +151,50 @@ public class DataInitializer implements CommandLineRunner {
                     detail.setMoisturePercentage(new BigDecimal("75.9"));
                     variant.setDetail(detail);
 
-                    ProductPriceHistory priceHistory = new ProductPriceHistory();
-                    priceHistory.setPrice(new BigDecimal(46));
-                    priceHistory.setStore(allStores.stream().filter(s->s.getStoreCode().equals("OFFICEAL")).findAny().get());
-                    priceHistory.setVariant(variant);
-                    variant.getPriceHistory().add(priceHistory);
+                    ProductPriceHistory officealPrice = new ProductPriceHistory();
+                    officealPrice.setPrice(new BigDecimal(46));
+                    officealPrice.setStore(allStores.stream().filter(s->s.getStoreCode().equals("OFFICEAL")).findAny().get());
+                    officealPrice.setVariant(variant);
+                    variant.getPriceHistory().add(officealPrice);
 
-                    kibble.setVariants(List.of(variant));
+                    ProductPriceHistory officealPrice2 = new ProductPriceHistory();
+                    officealPrice2.setPrice(new BigDecimal(46));
+                    officealPrice2.setStore(allStores.stream().filter(s->s.getStoreCode().equals("OFFICEAL")).findAny().get());
+                    officealPrice2.setVariant(variant);
+                    variant.getPriceHistory().add(officealPrice2);
 
-                    // 修正儲存順序：由上而下，逐層儲存
+                    ProductPriceHistory oldPlacePrice = new ProductPriceHistory();
+                    oldPlacePrice.setPrice(new BigDecimal(43));
+                    oldPlacePrice.setStore(allStores.stream().filter(s->s.getStoreCode().equals("OLD")).findAny().get());
+                    oldPlacePrice.setVariant(variant);
+                    variant.getPriceHistory().add(oldPlacePrice);
+
+                    ProductVariant variant2 = new ProductVariant();
+                    variant2.setSku("DOGCAT-001-BEEF85G-1C");
+                    variant2.setPackageWeightGrams(85);
+                    variant2.setUnitOfMeasure(PackageUnit.CAN);
+                    variant2.setPackSize(1);
+                    variant2.setProduct(kibble);
+                    variant2.setVariantName("草飼牛肉");
+                    variant2.setIngredients(allIngredients.stream().filter(i -> i.getIngredientCode().equals("BEEF") || i.getIngredientCode().equals("CHICKEN")).toList());
+
+                    ProductDetail detail2 = new ProductDetail();
+                    detail2.setIngredients("牛肉、雞肉、雞心肝、雞蛋黃...");
+                    detail2.setProteinPercentage(new BigDecimal("15.8"));
+                    detail2.setFatPercentage(new BigDecimal("6.6"));
+                    detail2.setMoisturePercentage(new BigDecimal("74.6"));
+                    variant2.setDetail(detail2);
+
+                    ProductPriceHistory priceHistory2 = new ProductPriceHistory();
+                    priceHistory2.setPrice(new BigDecimal(46));
+                    priceHistory2.setStore(allStores.stream().filter(s->s.getStoreCode().equals("OFFICEAL")).findAny().get());
+                    priceHistory2.setVariant(variant2);
+                    variant2.getPriceHistory().add(priceHistory2);
+
+                    kibble.setVariants(List.of(variant,variant2));
+
                     kibbleRepository.save(kibble);
-                    productVariantRepository.save(variant);
+                    productVariantRepository.saveAll(List.of(variant,variant2));
                 }
 //                case "MONSTER" -> {
 //                }
