@@ -48,14 +48,13 @@ public class ProductService {
      * @return WetFoodViewDto 的集合
      */
     @Transactional(readOnly = true)
-    public Set<WetFoodViewDto> getAllToDto() {
+    public List<WetFoodViewDto> getAllToDto() {
         return productRepository.findAll().stream()
                 .flatMap(product -> product.getVariants().stream()
                         .map(variant -> {
                             // 找出此規格最低價的歷史紀錄
                             Optional<ProductPriceHistory> lowestPriceOpt = variant.getPriceHistory().stream()
                                     .min(Comparator.comparing(ProductPriceHistory::getPrice));
-
                             // 如果沒有價格資訊，則不顯示此項目
                             if (lowestPriceOpt.isEmpty()) {
                                 return null;
@@ -67,6 +66,7 @@ public class ProductService {
                             dto.setProductId(product.getId());
                             dto.setVariantId(variant.getId());
                             dto.setBrandName(product.getBrand().getBrandName());
+                            dto.setUnit(variant.getUnitOfMeasure());
                             // 組合顯示名稱
                             dto.setDisplayName(String.format("%s - %s", product.getProductName(), variant.getVariantName()));
                             dto.setStoreName(lowestPrice.getStore().getStoreName());
@@ -75,20 +75,28 @@ public class ProductService {
                             dto.calculatePerPrice(variant.getPackageWeightGrams());
 
                             // 填入明細資訊 (其他價格)
-                            Set<WetFoodViewDto.Detail> details = variant.getPriceHistory().stream()
-                                    // 過濾掉最低價的那一筆
-                                    .filter(ph -> !ph.getId().equals(lowestPrice.getId()))
-                                    .map(ph -> new WetFoodViewDto.Detail(
-                                            ph.getStore().getStoreName(),
-                                            ph.getPrice(),
-                                            null, // 明細中的百克價格暫不計算
-                                            ph.getUpdateDT()))
-                                    .collect(Collectors.toSet());
-                            dto.setDetails(details);
-
+                            dto.setDetails(variant.getPriceHistory().stream()
+                                    .filter(ph -> !ph.getId().equals(lowestPrice.getId()))// 過濾掉最低價的那一筆
+                                    .map(ph -> {
+                                        WetFoodViewDto detail = new WetFoodViewDto();
+                                        detail.setBrandName(dto.getBrandName());
+                                        detail.setDisplayName(dto.getDisplayName());
+                                        detail.setStoreName(ph.getStore().getStoreName());
+                                        detail.setUnit(dto.getUnit());
+                                        detail.setPrice(ph.getPrice());
+                                        detail.setUpdateDT(ph.getUpdateDT());
+                                        detail.calculatePerPrice(variant.getPackageWeightGrams());
+                                        return detail;
+                                    })
+                                    .sorted(Comparator.comparing(WetFoodViewDto::getPrice))
+                                    .toList());
                             return dto;
                         }))
                 .filter(Objects::nonNull) // 過濾掉沒有價格的項目
-                .collect(Collectors.toSet());
+                .sorted(Comparator.comparing(WetFoodViewDto::getBrandName)
+                        .thenComparing(WetFoodViewDto::getDisplayName)
+                        .thenComparing(WetFoodViewDto::getUnit)
+                        .thenComparing(WetFoodViewDto::getPrice))
+                .collect(Collectors.toList());
     }
 }

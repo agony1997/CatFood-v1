@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 /**
@@ -21,9 +20,8 @@ import java.util.UUID;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "product_price_history", indexes = {
-        @Index(name = "idx_price_history_query", columnList = "product_variant_id, store_id, create_dt")
-})
+@Table(name = "product_price_history", indexes = {@Index(name = "idx_price_history_query",
+        columnList = "product_variant_id, store_id, create_dt")})
 public class ProductPriceHistory extends Auditable {
     /**
      * 欄位名稱: id
@@ -55,7 +53,7 @@ public class ProductPriceHistory extends Auditable {
      * 欄位用途: 記錄的價格。
      */
     @NotNull
-    @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal price; // 價格
+    @Column(nullable = false)
+    private Integer price; // 價格
 
 }

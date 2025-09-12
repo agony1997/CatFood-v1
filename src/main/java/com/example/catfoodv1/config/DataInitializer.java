@@ -20,8 +20,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -71,9 +75,12 @@ public class DataInitializer implements CommandLineRunner {
 
     private void createData() {
         List<Store> stores = createStore();
+        Map<String, Store> storeMap = stores.stream()
+                .collect(Collectors.toMap(Store::getStoreCode, Function.identity()));
+
         List<Tag> allTags = createTag();
         List<Ingredient> allIngredients = createIngredients();
-        createShepherdTechnologyGroup(allTags, allIngredients,stores);
+        createShepherdTechnologyGroup(allTags, allIngredients, storeMap);
     }
 
     private List<Store> createStore() {
@@ -116,7 +123,7 @@ public class DataInitializer implements CommandLineRunner {
      * 公司 : 牧羊人集團
      * 旗下品牌 : 汪喵星球、怪獸部落、HeroMama、超凝小姐
      */
-    private void createShepherdTechnologyGroup(List<Tag> allTags, List<Ingredient> allIngredients,List<Store> allStores) {
+    private void createShepherdTechnologyGroup(List<Tag> allTags, List<Ingredient> allIngredients, Map<String, Store> storeMap) {
         Company company = companyRepository.save(Company.builder().companyCode("SHEP").companyName("牧羊人集團").build());
 
         List<Brand> brands = brandRepository.saveAll(List.of(
@@ -135,39 +142,35 @@ public class DataInitializer implements CommandLineRunner {
                     kibble.setProductName("鮮肉罐");
                     kibble.setTags(allTags.stream().filter(t -> t.getTagCode().equals("GRAIN_FREE")).toList());
 
-                    ProductVariant variant = new ProductVariant();
-                    variant.setSku("DOGCAT-001-TUR85G-1C");
-                    variant.setPackageWeightGrams(85);
-                    variant.setUnitOfMeasure(PackageUnit.CAN);
-                    variant.setPackSize(1);
-                    variant.setProduct(kibble);
-                    variant.setVariantName("田園火雞");
-                    variant.setIngredients(allIngredients.stream().filter(i -> i.getIngredientCode().equals("TURKEY") || i.getIngredientCode().equals("CHICKEN")).toList());
+                    ProductVariant turkeyCanVariant = new ProductVariant();
+                    turkeyCanVariant.setSku("DOGCAT-001-TUR85G-1C");
+                    turkeyCanVariant.setPackageWeightGrams(85);
+                    turkeyCanVariant.setUnitOfMeasure(PackageUnit.CAN);
+                    turkeyCanVariant.setPackSize(1);
+                    turkeyCanVariant.setProduct(kibble);
+                    turkeyCanVariant.setVariantName("田園火雞");
+                    turkeyCanVariant.setIngredients(allIngredients.stream().filter(i -> i.getIngredientCode().equals("TURKEY") || i.getIngredientCode().equals("CHICKEN")).toList());
 
                     ProductDetail detail = new ProductDetail();
                     detail.setIngredients("火雞肉、雞心肝、雞蛋黃...");
                     detail.setProteinPercentage(new BigDecimal("15.1"));
                     detail.setFatPercentage(new BigDecimal(6));
                     detail.setMoisturePercentage(new BigDecimal("75.9"));
-                    variant.setDetail(detail);
+                    turkeyCanVariant.setDetail(detail);
 
-                    ProductPriceHistory officealPrice = new ProductPriceHistory();
-                    officealPrice.setPrice(new BigDecimal(46));
-                    officealPrice.setStore(allStores.stream().filter(s->s.getStoreCode().equals("OFFICEAL")).findAny().get());
-                    officealPrice.setVariant(variant);
-                    variant.getPriceHistory().add(officealPrice);
+                    turkeyCanVariant.setPriceHistory(createPriceHistories(turkeyCanVariant, storeMap, "OFFICEAL:46", "MOMO:45", "OLD:43"));
 
-                    ProductPriceHistory officealPrice2 = new ProductPriceHistory();
-                    officealPrice2.setPrice(new BigDecimal(46));
-                    officealPrice2.setStore(allStores.stream().filter(s->s.getStoreCode().equals("OFFICEAL")).findAny().get());
-                    officealPrice2.setVariant(variant);
-                    variant.getPriceHistory().add(officealPrice2);
+                    ProductVariant turkeyBoxVariant = new ProductVariant();
+                    turkeyBoxVariant.setSku("DOGCAT-001-TUR85G-24C"); // SKU should be consistent for the same product variant
+                    turkeyBoxVariant.setPackageWeightGrams(85*24);
+                    turkeyBoxVariant.setUnitOfMeasure(PackageUnit.BOX);
+                    turkeyBoxVariant.setPackSize(24);
+                    turkeyBoxVariant.setProduct(kibble);
+                    turkeyBoxVariant.setVariantName("田園火雞");
+                    turkeyBoxVariant.setIngredients(allIngredients.stream().filter(i -> i.getIngredientCode().equals("TURKEY") || i.getIngredientCode().equals("CHICKEN")).toList());
+                    turkeyBoxVariant.setDetail(detail);
 
-                    ProductPriceHistory oldPlacePrice = new ProductPriceHistory();
-                    oldPlacePrice.setPrice(new BigDecimal(43));
-                    oldPlacePrice.setStore(allStores.stream().filter(s->s.getStoreCode().equals("OLD")).findAny().get());
-                    oldPlacePrice.setVariant(variant);
-                    variant.getPriceHistory().add(oldPlacePrice);
+                    turkeyBoxVariant.setPriceHistory(createPriceHistories(turkeyBoxVariant, storeMap, "OFFICEAL:1100", "MOMO:900", "OLD:1000"));
 
                     ProductVariant variant2 = new ProductVariant();
                     variant2.setSku("DOGCAT-001-BEEF85G-1C");
@@ -185,16 +188,11 @@ public class DataInitializer implements CommandLineRunner {
                     detail2.setMoisturePercentage(new BigDecimal("74.6"));
                     variant2.setDetail(detail2);
 
-                    ProductPriceHistory priceHistory2 = new ProductPriceHistory();
-                    priceHistory2.setPrice(new BigDecimal(46));
-                    priceHistory2.setStore(allStores.stream().filter(s->s.getStoreCode().equals("OFFICEAL")).findAny().get());
-                    priceHistory2.setVariant(variant2);
-                    variant2.getPriceHistory().add(priceHistory2);
+                    variant2.setPriceHistory(createPriceHistories(variant2, storeMap, "OFFICEAL:46"));
 
-                    kibble.setVariants(List.of(variant,variant2));
+                    kibble.setVariants(List.of(turkeyCanVariant, turkeyBoxVariant, variant2));
 
                     kibbleRepository.save(kibble);
-                    productVariantRepository.saveAll(List.of(variant,variant2));
                 }
 //                case "MONSTER" -> {
 //                }
@@ -204,6 +202,19 @@ public class DataInitializer implements CommandLineRunner {
 //                }
             }
         });
+    }
+
+    private List<ProductPriceHistory> createPriceHistories(ProductVariant variant, Map<String, Store> storeMap, String... storePrices) {
+        return Arrays.stream(storePrices)
+                .map(sp -> {
+                    String[] parts = sp.split(":");
+                    String storeCode = parts[0];
+                    Integer price = Integer.parseInt(parts[1]);
+                    Store store = storeMap.get(storeCode);
+
+                    return new ProductPriceHistory(null, variant, store, price);
+                })
+                .collect(Collectors.toList());
     }
 
 }

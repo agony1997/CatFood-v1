@@ -1,5 +1,6 @@
 package com.example.catfoodv1.model.dto.product;
 
+import com.example.catfoodv1.model.type.PackageUnit;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,8 +8,7 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * 前端顯示 :
@@ -27,25 +27,17 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class WetFoodViewDto {
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class Detail {
-        private String storeName;
-        private BigDecimal price;
-        private BigDecimal pricePer;
-        private LocalDateTime updateDT;
-    }
 
     // === 顯示 ===
     private String brandName;
     private String displayName;
     private String storeName;
-    private BigDecimal price;
+    private PackageUnit unit;
+    private Integer price;
     private BigDecimal pricePer; // 計算 : 每 100 克的價格
     private LocalDateTime updateDT;
 
-    private Set<Detail> details;
+    private List<WetFoodViewDto> details = new ArrayList<>();
 
     private UUID productId;
     private UUID variantId;
@@ -55,7 +47,7 @@ public class WetFoodViewDto {
         if (price != null && weight != null && weight > 0) {
             // 正確的公式：(價格 * 100) / 重量
             // 並指定保留 2 位小數，以及使用標準的四捨五入模式
-            return this.pricePer = price.multiply(new BigDecimal("100"))
+            return this.pricePer = new BigDecimal(price).multiply(new BigDecimal("100"))
                     .divide(new BigDecimal(weight), 2, RoundingMode.HALF_UP);
         }
         return BigDecimal.ZERO;

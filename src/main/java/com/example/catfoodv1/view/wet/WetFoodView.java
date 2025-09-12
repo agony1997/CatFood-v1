@@ -9,13 +9,17 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.data.renderer.LitRenderer;
-import com.vaadin.flow.data.renderer.ComponentRenderer;
+import com.vaadin.flow.component.treegrid.TreeGrid;
+import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
+import com.vaadin.flow.data.renderer.TextRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
-import com.vaadin.flow.theme.lumo.LumoUtility;
+
+// TODO 建立罐頭 -> 新公司 -> 新品牌 -> 新TAG -> 新主成分 ->新販售處
+// TODO 可以輸入多個價格
+// TODO 成分、價格趨勢
 
 @PageTitle("咪貓罐頭")
 @AnonymousAllowed
@@ -27,7 +31,7 @@ public class WetFoodView extends VerticalLayout {
     private HorizontalLayout body = new HorizontalLayout();
     private Button createBtn = new Button(VaadinIcon.PLUS.create());
     private CreateDialog createDialog;
-    private final Grid<WetFoodViewDto> grid = new Grid<>(WetFoodViewDto.class, false);
+    private final TreeGrid<WetFoodViewDto> grid = new TreeGrid<>(WetFoodViewDto.class, false);
     private final CommonService commonService;
 
     public WetFoodView(ProductService productService, CommonService commonService) {
@@ -40,57 +44,19 @@ public class WetFoodView extends VerticalLayout {
     }
 
     private void search() {
-        grid.setItems(productService.getAllToDto());
+        grid.setItems(productService.getAllToDto(), WetFoodViewDto::getDetails);
     }
 
     private void initGrid() {
         grid.setAllRowsVisible(true);
         grid.setSelectionMode(Grid.SelectionMode.NONE);
-
-        grid.setDetailsVisibleOnClick(false);
-
-        grid.addColumn(WetFoodViewDto::getBrandName).setHeader("品牌")
-                .setRenderer(LitRenderer.<WetFoodViewDto>of(
-                                """
-                                        <div style="display: flex; align-items: center; gap: var(--lumo-space-s);">
-                                            <vaadin-button theme="tertiary-inline icon" @click="${handleClick}" aria-label="Toggle details">
-                                                <vaadin-icon icon="${item.detailsOpened ? 'lumo:angle-down' : 'lumo:angle-right'}"></vaadin-icon>
-                                            </vaadin-button>
-                                            <span>${item.displayName}</span>
-                                        </div>
-                                        """)
-                        .withProperty("displayName", WetFoodViewDto::getDisplayName)
-                        .withProperty("detailsOpened", grid::isDetailsVisible)
-                        .withFunction("handleClick", dto -> grid.setDetailsVisible(dto, !grid.isDetailsVisible(dto))));
-
+        grid.addHierarchyColumn(WetFoodViewDto::getBrandName).setHeader("品牌");
         grid.addColumn(WetFoodViewDto::getDisplayName).setHeader("品名");
         grid.addColumn(WetFoodViewDto::getStoreName).setHeader("販售處");
+        grid.addColumn(WetFoodViewDto::getUnit).setHeader("單位").setRenderer(new TextRenderer<>(dto -> dto.getUnit().text));
         grid.addColumn(WetFoodViewDto::getPrice).setHeader("價格");
         grid.addColumn(WetFoodViewDto::getPricePer).setHeader("百克價格");
-        grid.addColumn(WetFoodViewDto::getUpdateDT).setHeader("最後更新");
-
-        grid.setItemDetailsRenderer(new ComponentRenderer<>(dto -> {
-            VerticalLayout detailsLayout = new VerticalLayout();
-            detailsLayout.setSpacing(false);
-            detailsLayout.setPadding(false);
-            detailsLayout.addClassName(LumoUtility.Padding.Left.LARGE);
-
-            // 檢查是否有明細資料
-            if (dto.getDetails() != null && !dto.getDetails().isEmpty()) {
-                dto.getDetails().forEach(detail -> {
-                    // 為每一筆明細創建一個顯示標籤
-                    String detailText = String.format("販售處: %s, 價格: %s, 更新於: %s",
-                            detail.getStoreName(),
-                            detail.getPrice(),
-                            detail.getUpdateDT().toLocalDate());
-                    detailsLayout.add(detailText);
-                });
-            } else {
-                detailsLayout.add("無其他價格資訊");
-            }
-            return detailsLayout;
-        }));
-
+        grid.addColumn(WetFoodViewDto::getUpdateDT).setHeader("最後更新").setRenderer(new LocalDateTimeRenderer<>(WetFoodViewDto::getUpdateDT));
         grid.getColumns().forEach(c -> c.setResizable(true).setAutoWidth(true));
     }
 
