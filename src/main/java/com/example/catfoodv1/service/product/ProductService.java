@@ -35,53 +35,16 @@ public class ProductService {
     @Transactional
     @CacheEvict(value = "wetFoodList", allEntries = true)
     public void createProduct(ProductCreateDto dto) {
+        // 1. 獲取必要的關聯實體
         Brand brand = brandRepository.getReferenceById(dto.getBrandId());
         Ingredient ingredient = ingredientRepository.getReferenceById(dto.getIngredientId());
         Store store = storeRepository.getReferenceById(dto.getStoreId());
 
-        Product product = new WetFood();
-        ProductDetail detail = new ProductDetail();
-        ProductVariant variant = new ProductVariant();
-        ProductPriceHistory priceHistory = new ProductPriceHistory();
-        VariantIngredientMapping mapping = new VariantIngredientMapping();
+        // 2. 使用靜態工廠方法建立完整的產品物件圖
+        WetFood product = WetFood.create(dto, brand, ingredient, store);
 
-        mapping.setVariant(variant);
-        mapping.setIngredient(ingredient);
-        mapping.setIngredientOrder(1);
-
-        product.setBrand(brand);
-        product.setVariants(List.of(variant));
-        product.setProductCode(UUID.randomUUID().toString().substring(0, 8));
-        product.setProductName(dto.getProductName());
-
-        detail.setVariant(variant);
-        detail.setMoisturePercentage(dto.getMoisturePercentage());
-        detail.setProteinPercentage(dto.getProteinPercentage());
-        detail.setFatPercentage(dto.getFatPercentage());
-        detail.setCarbsPercentage(dto.getCarbsPercentage());
-
-        variant.setProduct(product);
-        variant.setDetail(detail);
-        variant.setVariantIngredients(List.of(mapping));
-        variant.setPriceHistory(List.of(priceHistory));
-        variant.setPackSize(dto.getPackSize());
-        variant.setVariantName(dto.getFlavorName());
-        variant.setUnitOfMeasure(dto.getUnitOfMeasure());
-        variant.setPackageWeightGrams(dto.getGrams());
-
-        priceHistory.setStore(store);
-        priceHistory.setVariant(variant);
-        priceHistory.setPrice(dto.getPrice());
-
-        log.info("Save new Product : {}", product);
-        log.info("Save new ProductVariant : {}", variant);
-        log.info("Save new ProductDetail : {}", detail);
-        log.info("Save new VariantIngredientMapping : {}", mapping);
-        log.info("Save new PriceHistory : {}", priceHistory);
-        log.info("Bind Brand : {}", brand);
-        log.info("Bind Ingredient : {}", ingredient);
-        log.info("Bind Store : {}", store);
-
+        // 3. 儲存根實體，JPA 的 `CascadeType.ALL` 會自動儲存所有關聯的子實體
+        log.info("Creating new product: {}", product);
         productRepository.save(product);
     }
 

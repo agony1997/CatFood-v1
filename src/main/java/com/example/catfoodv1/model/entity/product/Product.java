@@ -79,6 +79,14 @@ public abstract class Product extends Auditable {
      */
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductVariant> variants = new ArrayList<>(); // 產品規格 (SKUs)
+
+    // == Helper Method == //
+    public void addVariant(ProductVariant variant) {
+        if (variant != null) {
+            this.variants.add(variant);
+            variant.setProduct(this);
+        }
+    }
 }
 
 //  JPA 的 @Inheritance 標籤用於指定實體類別的繼承結構如何映射到資料庫表格。

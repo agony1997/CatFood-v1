@@ -99,20 +99,25 @@ public class ProductVariant extends Auditable {
     @OneToOne(mappedBy = "variant", cascade = CascadeType.ALL, orphanRemoval = true)
     private ProductDetail detail; // 產品詳細資訊
 
-    /**
-     * 輔助方法，用於同步 ProductDetail 的雙向關聯。
-     * 當設置 detail 時，同時更新 detail 中的 variant 引用。
-     * @param detail 要關聯的產品詳細資訊實體
-     */
     public void setDetail(ProductDetail detail) {
-        if (detail == null) {
-            if (this.detail != null) {
-                this.detail.setVariant(null);
-            }
-        } else {
-            detail.setVariant(this);
-        }
         this.detail = detail;
+        if (detail != null) {
+            detail.setVariant(this); // 維護雙向關聯
+        }
+    }
+
+    public void addIngredientMapping(VariantIngredientMapping mapping) {
+        if (mapping != null) {
+            this.variantIngredients.add(mapping);
+            mapping.setVariant(this); // 維護雙向關聯
+        }
+    }
+
+    public void addPriceHistory(ProductPriceHistory priceHistory) {
+        if (priceHistory != null) {
+            this.priceHistory.add(priceHistory);
+            priceHistory.setVariant(this); // 維護雙向關聯
+        }
     }
 
     /**
