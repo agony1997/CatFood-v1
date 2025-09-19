@@ -6,9 +6,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * 產品規格實體 (SKU)
@@ -46,9 +44,9 @@ public class ProductVariant extends Auditable {
      * 欄位名稱: sku
      * 欄位用途: 庫存單位 (Stock Keeping Unit)，產品規格的唯一業務代碼。
      */
-    @NotNull
+    // @NotNull - SKU is generated before persisting, so it can be null initially.
     @Column(name = "sku", unique = true, nullable = false)
-    private String sku; // 建議格式: productCode-packageInfo (不再包含口味)
+    private String sku;
 
     /**
      * 欄位名稱: variant_display_name
@@ -57,14 +55,14 @@ public class ProductVariant extends Auditable {
     @Column(name = "variant_name")
     private String variantName;
 
-    /**
-     * 欄位名稱: N/A (中介表格 product_variant_ingredient)
-     * 欄位用途: 此規格包含的主要成分。
-     */
-    @ManyToMany
-    @JoinTable(name = "product_variant_ingredient", joinColumns = @JoinColumn(name = "product_variant_id"), inverseJoinColumns = @JoinColumn(name = "ingredient_id"))
-    private List<Ingredient> ingredients = new ArrayList<>(); // 主要成分
+    // 舊的 @ManyToMany 關聯已不適用
+    // @ManyToMany
+    // @JoinTable(name = "product_variant_ingredient", joinColumns = @JoinColumn(name = "product_variant_id"), inverseJoinColumns = @JoinColumn(name = "ingredient_id"))
+    // private List<Ingredient> ingredients = new ArrayList<>(); // 主要成分
 
+    @OneToMany(mappedBy = "variant", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OrderBy("ingredientOrder ASC") // 核心：確保取出的成分列表永遠是按順序排列的
+    private List<VariantIngredientMapping> variantIngredients = new ArrayList<>();
     /**
      * 欄位名稱: package_weight_grams
      * 欄位用途: 包裝的總重量 (公克)。
@@ -117,4 +115,30 @@ public class ProductVariant extends Auditable {
         this.detail = detail;
     }
 
+    /**
+     * 在實體持久化或更新前自動產生 SKU。
+     * 這是確保 SKU 格式一致性與唯一性的核心業務邏輯。
+     * 格式: [ProductCode]-[VariantIdentifier]-[PackageIdentifier]
+     * 範例: DOGCAT-001-TUR-85G1C
+     */
+    @PrePersist
+    @PreUpdate
+    public void generateSku() {
+        // 確保所有必要資訊都存在，否則無法產生 SKU
+        if (product == null || product.getProductCode() == null ||
+                variantIngredients == null || variantIngredients.isEmpty() ||
+                packageWeightGrams == null || packSize == null || unitOfMeasure == null) {
+             throw new IllegalStateException("Cannot generate SKU due to missing variant properties.");
+        }
+
+        // 1. 產品代碼
+        String productCode = product.getProductCode();
+
+        // 2. 規格識別碼 (現在可以精確地取得第一主成分)
+        String variantIdentifier = variantIngredients.getFirst().getIngredient().getIngredientCode();
+        // 3. 包裝識別碼 (例如: 85G1C for 85 grams, 1 Can)
+        String packageIdentifier = (packageWeightGrams / packSize) + "G" + packSize + unitOfMeasure.name().charAt(0);
+
+        this.sku = String.join("-", productCode, variantIdentifier, packageIdentifier);
+    }
 }

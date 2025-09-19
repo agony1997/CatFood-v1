@@ -21,6 +21,9 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 
+import java.util.Comparator;
+import java.util.List;
+
 // TODO 建立罐頭 -> 新公司 -> 新品牌 -> 新TAG -> 新主成分 ->新販售處
 // TODO 可以輸入多個價格
 // TODO 成分、價格趨勢
@@ -40,6 +43,7 @@ public class WetFoodView extends VerticalLayout {
     private final Button createBtn = new Button(VaadinIcon.PLUS.create());
     private CreateDialog createDialog;
     private final TreeGrid<WetFoodViewDto> grid = new TreeGrid<>(WetFoodViewDto.class, false);
+    private List<WetFoodViewDto> productList; // 用於存放 Grid 資料的 List
     private final CommonService commonService;
 
     public WetFoodView(ProductService productService, CompanyService companyService, BrandService brandService, StoreService storeService, IngredientService ingredientService, CommonService commonService) {
@@ -56,7 +60,8 @@ public class WetFoodView extends VerticalLayout {
     }
 
     private void search() {
-        grid.setItems(productService.getAllToDto(), WetFoodViewDto::getDetails);
+        this.productList = productService.getAllToDto();
+        grid.setItems(this.productList, WetFoodViewDto::getDetails);
     }
 
     private void initGrid() {
@@ -74,12 +79,8 @@ public class WetFoodView extends VerticalLayout {
 
     private void setListener() {
         createBtn.addClickListener(event -> {
-            createDialog = new CreateDialog("新增罐頭", commonService, companyService, brandService, storeService, ingredientService);
-            createDialog.setCancelButtonDefaultEvent();
-            createDialog.setConfirmButtonEvent(() -> {
-                // add
-                createDialog.close();
-            });
+            createDialog = new CreateDialog("新增罐頭", productService, commonService, companyService, brandService, storeService, ingredientService);
+            createDialog.addSaveListener(e -> search()); // 新增成功後，直接重新查詢以確保資料結構正確
             createDialog.open();
         });
     }

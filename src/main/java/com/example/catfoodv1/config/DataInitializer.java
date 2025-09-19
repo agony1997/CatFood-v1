@@ -143,13 +143,16 @@ public class DataInitializer implements CommandLineRunner {
                     kibble.setTags(allTags.stream().filter(t -> t.getTagCode().equals("GRAIN_FREE")).toList());
 
                     ProductVariant turkeyCanVariant = new ProductVariant();
-                    turkeyCanVariant.setSku("DOGCAT-001-TUR85G-1C");
                     turkeyCanVariant.setPackageWeightGrams(85);
                     turkeyCanVariant.setUnitOfMeasure(PackageUnit.CAN);
                     turkeyCanVariant.setPackSize(1);
                     turkeyCanVariant.setProduct(kibble);
                     turkeyCanVariant.setVariantName("田園火雞");
-                    turkeyCanVariant.setIngredients(allIngredients.stream().filter(i -> i.getIngredientCode().equals("TURKEY") || i.getIngredientCode().equals("CHICKEN")).toList());
+
+                    // 設定主成分順序：1. 火雞, 2. 雞肉
+                    VariantIngredientMapping turkey = new VariantIngredientMapping(null, turkeyCanVariant, findIngredient(allIngredients, "TURKEY"), 1);
+                    VariantIngredientMapping chickenForTurkey = new VariantIngredientMapping(null, turkeyCanVariant, findIngredient(allIngredients, "CHICKEN"), 2);
+                    turkeyCanVariant.setVariantIngredients(List.of(turkey, chickenForTurkey));
 
                     ProductDetail detail = new ProductDetail();
                     detail.setIngredients("火雞肉、雞心肝、雞蛋黃...");
@@ -159,27 +162,32 @@ public class DataInitializer implements CommandLineRunner {
                     turkeyCanVariant.setDetail(detail);
 
                     turkeyCanVariant.setPriceHistory(createPriceHistories(turkeyCanVariant, storeMap, "OFFICEAL:46", "MOMO:45", "OLD:43"));
-
+                    
                     ProductVariant turkeyBoxVariant = new ProductVariant();
-                    turkeyBoxVariant.setSku("DOGCAT-001-TUR85G-24C"); // SKU should be consistent for the same product variant
                     turkeyBoxVariant.setPackageWeightGrams(85*24);
-                    turkeyBoxVariant.setUnitOfMeasure(PackageUnit.BOX);
+                    turkeyBoxVariant.setUnitOfMeasure(PackageUnit.CAN); // A box of 24 cans
                     turkeyBoxVariant.setPackSize(24);
                     turkeyBoxVariant.setProduct(kibble);
                     turkeyBoxVariant.setVariantName("田園火雞");
-                    turkeyBoxVariant.setIngredients(allIngredients.stream().filter(i -> i.getIngredientCode().equals("TURKEY") || i.getIngredientCode().equals("CHICKEN")).toList());
-                    turkeyBoxVariant.setDetail(detail);
+
+                    // 同樣設定主成分順序
+                    VariantIngredientMapping turkeyForBox = new VariantIngredientMapping(null, turkeyBoxVariant, findIngredient(allIngredients, "TURKEY"), 1);
+                    VariantIngredientMapping chickenForTurkeyBox = new VariantIngredientMapping(null, turkeyBoxVariant, findIngredient(allIngredients, "CHICKEN"), 2);
+                    turkeyBoxVariant.setVariantIngredients(List.of(turkeyForBox, chickenForTurkeyBox));
 
                     turkeyBoxVariant.setPriceHistory(createPriceHistories(turkeyBoxVariant, storeMap, "OFFICEAL:1100", "MOMO:900", "OLD:1000"));
 
                     ProductVariant variant2 = new ProductVariant();
-                    variant2.setSku("DOGCAT-001-BEEF85G-1C");
                     variant2.setPackageWeightGrams(85);
                     variant2.setUnitOfMeasure(PackageUnit.CAN);
                     variant2.setPackSize(1);
                     variant2.setProduct(kibble);
                     variant2.setVariantName("草飼牛肉");
-                    variant2.setIngredients(allIngredients.stream().filter(i -> i.getIngredientCode().equals("BEEF") || i.getIngredientCode().equals("CHICKEN")).toList());
+
+                    // 設定主成分順序：1. 牛肉, 2. 雞肉
+                    VariantIngredientMapping beef = new VariantIngredientMapping(null, variant2, findIngredient(allIngredients, "BEEF"), 1);
+                    VariantIngredientMapping chickenForBeef = new VariantIngredientMapping(null, variant2, findIngredient(allIngredients, "CHICKEN"), 2);
+                    variant2.setVariantIngredients(List.of(beef, chickenForBeef));
 
                     ProductDetail detail2 = new ProductDetail();
                     detail2.setIngredients("牛肉、雞肉、雞心肝、雞蛋黃...");
@@ -217,4 +225,9 @@ public class DataInitializer implements CommandLineRunner {
                 .collect(Collectors.toList());
     }
 
+    private Ingredient findIngredient(List<Ingredient> ingredients, String code) {
+        return ingredients.stream()
+                .filter(i -> i.getIngredientCode().equals(code))
+                .findFirst().orElseThrow();
+    }
 }

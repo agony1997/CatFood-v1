@@ -44,4 +44,5 @@ public class Ingredient extends Auditable {
     @NotNull
     @Column(nullable = false)
     private String ingredientName; // 成分顯示名稱，例如 "雞肉", "鮭魚"
+
 }

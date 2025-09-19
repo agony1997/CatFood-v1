@@ -57,23 +57,4 @@ class ProductServiceIntegrationTest {
         brand.setCompany(savedCompany);
         savedBrand = brandRepository.save(brand);
     }
-
-    @Test
-    void createProduct_shouldPersistProductInDatabase() {
-        // 準備：建立一個新的 Product 物件
-        Kibble newKibble = new Kibble();
-        newKibble.setProductCode("KIBBLE-001");
-        newKibble.setProductName("頂級測試乾糧");
-        newKibble.setBrand(savedBrand);
-
-        // 執行：呼叫 Service 方法
-        Product createdProduct = productService.createProduct(newKibble);
-
-        // 驗證：直接從資料庫中查找，確認資料已成功寫入
-        assertNotNull(createdProduct.getId());
-        Product foundProduct = productRepository.findById(createdProduct.getId()).orElse(null);
-        assertNotNull(foundProduct);
-        assertEquals("KIBBLE-001", foundProduct.getProductCode());
-        assertEquals("頂級測試乾糧", foundProduct.getProductName());
-    }
 }

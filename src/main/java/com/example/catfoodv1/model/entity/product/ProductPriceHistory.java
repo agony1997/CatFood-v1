@@ -56,4 +56,9 @@ public class ProductPriceHistory extends Auditable {
     @Column(nullable = false)
     private Integer price; // 價格
 
+    public ProductPriceHistory(ProductVariant variant, Store store, Integer price) {
+        this.variant = variant;
+        this.store = store;
+        this.price = price;
+    }
 }

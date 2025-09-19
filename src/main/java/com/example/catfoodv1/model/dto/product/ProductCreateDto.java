@@ -18,30 +18,39 @@ import java.util.UUID;
 @AllArgsConstructor
 public class ProductCreateDto {
 
-    // --- 產品資訊 ---
-    @NotNull(message = "必須選擇一個品牌")
-    private UUID brandId;
-
     @NotBlank(message = "產品名稱不能為空")
     private String productName;
 
-    // --- 規格資訊 ---
     @NotBlank(message = "規格名稱不能為空")
-    private String variantDisplayName;
+    private String flavorName;
 
-    @NotNull(message = "包裝數量不能為空")
-    @Positive(message = "包裝數量必須為正數")
+    @NotNull(message = "價格不能為空")
+    @Positive(message = "價格必須為正數")
+    private Integer price;
+
+    @NotNull(message = "數量不能為空")
+    @Positive(message = "數量必須為正數")
     private Integer packSize;
+
+    @NotNull(message = "克數不能為空")
+    @Positive(message = "克數必須為正數")
+    private Integer grams;
 
     @NotNull(message = "必須選擇包裝單位")
     private PackageUnit unitOfMeasure;
 
-    // --- 初始價格資訊 ---
     @NotNull(message = "必須選擇一個商店")
     private UUID storeId;
+    @NotNull(message = "必須選擇一個品牌")
+    private UUID brandId;
+    @NotNull(message = "必須選擇一個主成分")
+    private UUID ingredientId;
 
-    @NotNull(message = "價格不能為空")
-    @Positive(message = "價格必須為正數")
-    private BigDecimal price;
+    private String productCode;
+    private String ingredients; // 食物成分描述...
+    private BigDecimal proteinPercentage; // 蛋白質 (%)
+    private BigDecimal fatPercentage; // 脂肪 (%)
+    private BigDecimal moisturePercentage; // 水分 (%)
+    private BigDecimal carbsPercentage; // 碳水 (%)
 
 }

@@ -5,7 +5,6 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.H3;
-import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -22,7 +21,7 @@ public abstract class FormPopover<T> extends Popover {
 
     protected final Binder<T> binder;
     private final H3 title = new H3();
-    private final Button confirmButton = new Button("儲存");
+    private final Button confirmButton = new Button("新增");
     private final HorizontalLayout headerActions = new HorizontalLayout();
     private final VerticalLayout mainLayout = new VerticalLayout();
     private final VerticalLayout contentWrapper = new VerticalLayout();
@@ -36,7 +35,7 @@ public abstract class FormPopover<T> extends Popover {
         buildFrameLayout();
 
         // The title is determined by the subclass and is static. Set it once.
-        this.title.setText(getFormTitle());
+        setTitle(getFormTitle());
 
         confirmButton.addClickListener(e -> save());
     }
@@ -56,6 +55,13 @@ public abstract class FormPopover<T> extends Popover {
      */
     protected HorizontalLayout getHeaderActions() {
         return headerActions;
+    }
+
+    /**
+     * Sets the title of the popover.
+     */
+    protected void setTitle(String text) {
+        this.title.setText(text);
     }
     
     /**
@@ -101,11 +107,11 @@ public abstract class FormPopover<T> extends Popover {
             if (saveListener != null) {
                 saveListener.accept(savedBean);
             }
-            NotificationUtil.showSuccess("儲存成功");
+            NotificationUtil.showSuccess("新增成功");
             close();
         } catch (Exception e) {
             log.error("Save failed in FormPopover", e);
-            NotificationUtil.showFailure("儲存失敗: " + e.getMessage());
+            NotificationUtil.showFailure("新增失敗: " + e.getMessage());
         }
     }
 
@@ -130,10 +136,8 @@ public abstract class FormPopover<T> extends Popover {
         contentWrapper.setPadding(false);
         contentWrapper.setSpacing(false);
 
-        mainLayout.add(header, contentWrapper);
-        mainLayout.setPadding(true);
+        mainLayout.add(header, contentWrapper); // mainLayout is the root container
         mainLayout.setSpacing(false);
-        mainLayout.getStyle().setMarginBottom("10px");
         add(mainLayout);
     }
 }

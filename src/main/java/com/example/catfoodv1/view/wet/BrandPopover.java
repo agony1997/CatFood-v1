@@ -12,127 +12,155 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.orderedlayout.FlexComponent;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.function.Consumer;
+
 @Slf4j
 public class BrandPopover extends FormPopover<CommonDto> {
+    // Binders
     private final Binder<CommonDto> companyBinder = new Binder<>(CommonDto.class);
-
     // Services
     private final CompanyService companyService;
     private final BrandService brandService;
-    
     // UI Components
-    private final Button addCompany = new Button(VaadinIcon.ARROW_CIRCLE_RIGHT.create());
-    private final TextField companyName = new TextField("公司名稱");
-    private final TextField companyCode = new TextField("公司代碼");
     private final TextField brandName = new TextField("品牌名稱");
     private final TextField brandCode = new TextField("品牌代碼");
+    private final TextField companyName = new TextField("公司名稱");
+    private final TextField companyCode = new TextField("公司代碼");
     private final CommonSelect companySelect;
-    private final Button confirmCompany = new Button("新增公司");
-    private final VerticalLayout left = new VerticalLayout();
-    private final VerticalLayout right = new VerticalLayout();
+    private final Button addCompanyBtn = new Button(); // Icon is set dynamically
+    // State variable to track the current view
+    private boolean isCompanyViewActive = false;
+    // Layout for swapping views
+    private final VerticalLayout contentLayout = new VerticalLayout();
 
     public BrandPopover(CommonService commonService, CompanyService companyService, BrandService brandService) {
-        // 1. 呼叫父類別建構子，建立 Popover 框架
         super(CommonDto.class);
-
-        // 2. 初始化 Services 和子類別獨有的 UI 元件
         this.companyService = companyService;
         this.brandService = brandService;
         this.companySelect = new CommonSelect(commonService, SelectType.COMPANY);
 
-        // 3. 配置 UI 元件
-        configureComponents();
+        // Configure main content layout
+        contentLayout.setPadding(false);
+        contentLayout.setSpacing(false);
+        setFormContent(contentLayout);
 
-        // 4. 綁定資料和監聽器
-        bindFields();
-        addListeners();
+        // Configure and add the header button
+        addCompanyBtn.addThemeVariants(ButtonVariant.LUMO_ICON, ButtonVariant.LUMO_TERTIARY_INLINE,ButtonVariant.LUMO_ERROR,ButtonVariant.LUMO_SMALL);
+        // Set ONE listener that handles both states. This is the key change.
+        addCompanyBtn.addClickListener(e -> {
+            if (isCompanyViewActive) {
+                // If we are in the company view, switch back to brand view.
+                showBrandForm(null);
+            } else {
+                // If we are in the brand view, switch to company view.
+                showCompanyForm();
+            }
+        });
+        getHeaderActions().add(addCompanyBtn);
 
-        // 5. 創建表單內容並注入到父類別框架中
-        Component formContent = createCustomFormComponent();
-        setFormContent(formContent);
+        // Bind all fields once
+        bindBrandFields();
+        bindCompanyFields();
 
-        // 6. 將特定於子類別的動作按鈕附加到父類別的標頭
-        getHeaderActions().add(addCompany);
+        // Set the initial view in the constructor. This is the fix.
+        showBrandForm(null);
     }
 
-    private void bindFields() {
-        companyBinder.forField(companyName).asRequired("必填").bind(CommonDto::getName, CommonDto::setName);
-        companyBinder.forField(companyCode).asRequired("必填").bind(CommonDto::getCode, CommonDto::setCode);
+    private void bindBrandFields() {
         binder.forField(brandName).asRequired("必填").bind(CommonDto::getName, CommonDto::setName);
         binder.forField(brandCode).asRequired("必填").bind(CommonDto::getCode, CommonDto::setCode);
         binder.forField(companySelect).asRequired("必填").bind(
                 dto -> null,
-                (dto, select) -> {
-                    if (select != null) {
-                        dto.setParentId(select.getId());
-                    }
-                });
+                (dto, item) -> dto.setParentId(item != null ? item.getId() : null));
     }
 
-    private void addListeners() {
-        addCompany.addClickListener(event -> {
-            addCompany.setIcon(right.isVisible() ? VaadinIcon.ARROW_CIRCLE_RIGHT.create() : VaadinIcon.ARROW_CIRCLE_LEFT.create());
-            right.setVisible(!right.isVisible());
-        });
-
-        confirmCompany.addClickListener(event -> {
-            try {
-                if (!companyBinder.validate().isOk()) {
-                    NotificationUtil.showWarning("請檢查公司表單必填項！");
-                    return;
-                }
-                CommonDto savedCompany = companyService.save(companyBinder.getBean());
-                companySelect.addItem(savedCompany);
-                right.setVisible(false);
-            } catch (Exception e) {
-                log.error(e.getMessage(), e);
-                NotificationUtil.showFailure("新增公司失敗");
-            }
-        });
+    private void bindCompanyFields() {
+        companyBinder.forField(companyName).asRequired("必填").bind(CommonDto::getName, CommonDto::setName);
+        companyBinder.forField(companyCode).asRequired("必填").bind(CommonDto::getCode, CommonDto::setCode);
     }
 
     @Override
     public void refresh(CommonDto bean) {
         super.refresh(bean);
-        right.setVisible(false);
+        // The view is already set. If we are in the company view, switch back.
+        if (isCompanyViewActive) {
+            showBrandForm(null);
+        }
+    }
+
+    private void showBrandForm(CommonDto newCompany) {
+        contentLayout.removeAll();
+        contentLayout.add(createBrandFormComponent());
+
+        if (newCompany != null) {
+            companySelect.addItem(newCompany);
+        }
+
+        // Update UI state for Brand View
+        getConfirmButton().setVisible(true);
+        addCompanyBtn.setIcon(VaadinIcon.ARROW_CIRCLE_RIGHT.create());
+        addCompanyBtn.setTooltipText("新增公司");
+        setTitle(getFormTitle());
+        isCompanyViewActive = false;
+    }
+
+    private void showCompanyForm() {
+        contentLayout.removeAll();
+        contentLayout.add(createCompanyFormComponent(this::showBrandForm));
+
+        // Update UI state for Company View
+        getConfirmButton().setVisible(false);
+        addCompanyBtn.setIcon(VaadinIcon.ARROW_CIRCLE_LEFT.create());
+        addCompanyBtn.setTooltipText("返回");
+        setTitle("建立新公司");
+        isCompanyViewActive = true;
+    }
+
+    private Component createBrandFormComponent() {
+        brandName.setWidthFull();
+        brandCode.setWidthFull();
+        companySelect.setWidthFull();
+        brandName.getStyle().setPaddingTop("0");
+
+        Button confirmButton = getConfirmButton();
+        confirmButton.setWidthFull();
+        confirmButton.getStyle().setMarginTop("20px");
+
+        VerticalLayout layout = new VerticalLayout(brandName, brandCode, companySelect, confirmButton);
+        layout.setPadding(true);
+        layout.setSpacing(false);
+        layout.getStyle().setPaddingTop("2px").setPaddingBottom("0");
+        return layout;
+    }
+
+    private Component createCompanyFormComponent(Consumer<CommonDto> onSave) {
+        companyName.setWidthFull();
+        companyCode.setWidthFull();
         companyBinder.setBean(new CommonDto());
-    }
+        companyName.getStyle().setPaddingTop("0");
 
-    private Component createCustomFormComponent() {
-        // 此方法現在只負責「組裝」，而不是「創建」或「配置」
-        left.setSpacing(false);
-        right.setSpacing(false);
-        left.getStyle().setPaddingTop("2px").setPaddingBottom("0");
-        right.getStyle().setPaddingTop("2px").setPaddingBottom("0");
-        right.setVisible(false);
+        Button saveCompanyBtn = new Button("新增公司", e -> {
+            if (companyBinder.validate().isOk()) {
+                CommonDto savedCompany = companyService.save(companyBinder.getBean());
+                NotificationUtil.showSuccess("公司已新增");
+                onSave.accept(savedCompany); // Execute callback to switch back
+            }
+        });
 
-        HorizontalLayout body = new HorizontalLayout();
-        body.getStyle().setMarginBottom("0");
-        body.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.START);
+        saveCompanyBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        saveCompanyBtn.setWidthFull();
+        saveCompanyBtn.getStyle().setMarginTop("20px");
 
-        // Add components to layouts
-        left.add(brandName, brandCode, companySelect, getConfirmButton());
-        right.add(companyName, companyCode, confirmCompany);
-        body.add(left, right);
-
-        return body;
-    }
-
-    private void configureComponents() {
-        addCompany.addThemeVariants(ButtonVariant.LUMO_ICON, ButtonVariant.LUMO_TERTIARY_INLINE, ButtonVariant.LUMO_WARNING);
-        brandName.getStyle().setPaddingTop("0px");
-        companyName.getStyle().setPaddingTop("0px");
-        getConfirmButton().getStyle().setWidth("100%").setMarginTop("20px");
-
-        confirmCompany.getStyle().setWidth("100%").setMarginTop("36px");
-        confirmCompany.addThemeVariants(ButtonVariant.LUMO_SUCCESS, ButtonVariant.LUMO_PRIMARY);
+        VerticalLayout layout = new VerticalLayout(companyName, companyCode, saveCompanyBtn);
+        layout.setPadding(true);
+        layout.setSpacing(false);
+        layout.getStyle().set("padding-top", "2px").set("padding-bottom", "0");
+        return layout;
     }
 
     @Override

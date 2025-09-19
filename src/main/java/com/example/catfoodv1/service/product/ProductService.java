@@ -1,43 +1,110 @@
 package com.example.catfoodv1.service.product;
 
+import com.example.catfoodv1.model.dto.product.PriceAddDto;
+import com.example.catfoodv1.model.dto.product.ProductCreateDto;
 import com.example.catfoodv1.model.dto.product.WetFoodViewDto;
-import com.example.catfoodv1.model.entity.product.Product;
-import com.example.catfoodv1.model.entity.product.ProductPriceHistory;
+import com.example.catfoodv1.model.entity.business.Brand;
+import com.example.catfoodv1.model.entity.business.Store;
+import com.example.catfoodv1.model.entity.product.*;
+import com.example.catfoodv1.repo.business.BrandRepository;
+import com.example.catfoodv1.repo.business.StoreRepository;
+import com.example.catfoodv1.repo.product.IngredientRepository;
 import com.example.catfoodv1.repo.product.ProductRepository;
+import com.example.catfoodv1.repo.product.ProductVariantRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProductService {
-
     private final ProductRepository productRepository;
+    private final ProductVariantRepository productVariantRepository;
+    private final IngredientRepository ingredientRepository;
+    private final StoreRepository storeRepository;
+    private final BrandRepository brandRepository;
 
-    private Product getEntityById(UUID id) {
-        return productRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+    @Transactional
+    @CacheEvict(value = "wetFoodList", allEntries = true)
+    public void createProduct(ProductCreateDto dto) {
+        Brand brand = brandRepository.getReferenceById(dto.getBrandId());
+        Ingredient ingredient = ingredientRepository.getReferenceById(dto.getIngredientId());
+        Store store = storeRepository.getReferenceById(dto.getStoreId());
+
+        Product product = new WetFood();
+        ProductDetail detail = new ProductDetail();
+        ProductVariant variant = new ProductVariant();
+        ProductPriceHistory priceHistory = new ProductPriceHistory();
+        VariantIngredientMapping mapping = new VariantIngredientMapping();
+
+        mapping.setVariant(variant);
+        mapping.setIngredient(ingredient);
+        mapping.setIngredientOrder(1);
+
+        product.setBrand(brand);
+        product.setVariants(List.of(variant));
+        product.setProductCode(UUID.randomUUID().toString().substring(0, 8));
+        product.setProductName(dto.getProductName());
+
+        detail.setVariant(variant);
+        detail.setMoisturePercentage(dto.getMoisturePercentage());
+        detail.setProteinPercentage(dto.getProteinPercentage());
+        detail.setFatPercentage(dto.getFatPercentage());
+        detail.setCarbsPercentage(dto.getCarbsPercentage());
+
+        variant.setProduct(product);
+        variant.setDetail(detail);
+        variant.setVariantIngredients(List.of(mapping));
+        variant.setPriceHistory(List.of(priceHistory));
+        variant.setPackSize(dto.getPackSize());
+        variant.setVariantName(dto.getFlavorName());
+        variant.setUnitOfMeasure(dto.getUnitOfMeasure());
+        variant.setPackageWeightGrams(dto.getGrams());
+
+        priceHistory.setStore(store);
+        priceHistory.setVariant(variant);
+        priceHistory.setPrice(dto.getPrice());
+
+        log.info("Save new Product : {}", product);
+        log.info("Save new ProductVariant : {}", variant);
+        log.info("Save new ProductDetail : {}", detail);
+        log.info("Save new VariantIngredientMapping : {}", mapping);
+        log.info("Save new PriceHistory : {}", priceHistory);
+        log.info("Bind Brand : {}", brand);
+        log.info("Bind Ingredient : {}", ingredient);
+        log.info("Bind Store : {}", store);
+
+        productRepository.save(product);
     }
 
-    public List<Product> getAllProduct() {
-        return productRepository.findAll();
+    /**
+     *  為一個已存在的產品規格新增一筆價格紀錄。
+     */
+    @Transactional
+    @CacheEvict(value = "wetFoodList", allEntries = true)
+    public void addPriceToVariant(PriceAddDto dto) {
+        ProductVariant variant = productVariantRepository.findById(dto.getVariantId())
+                .orElseThrow(() -> new EntityNotFoundException("找不到指定的產品規格，ID: " + dto.getVariantId()));
+        Store store = storeRepository.getReferenceById(dto.getStoreId());
+
+        ProductPriceHistory newPrice = new ProductPriceHistory(variant, store, dto.getPrice());
+        variant.getPriceHistory().add(newPrice);
     }
 
-    public Product createProduct(Product product) {
-        product.setId(null);
-        return productRepository.save(product);
-    }
+    /**
+     * 為一個已存在的產品新增一筆規格+價錢。
+     */
+    @Transactional
+    public void addVariant() {
 
-    public Product updateProduct(Product product) {
-        Product entity = getEntityById(product.getId());
-        return productRepository.save(entity);
-    }
-
-    public void deleteProduct(UUID id) {
-        productRepository.deleteById(getEntityById(id).getId());
     }
 
     /**
@@ -48,6 +115,7 @@ public class ProductService {
      * @return WetFoodViewDto 的集合
      */
     @Transactional(readOnly = true)
+    @Cacheable("wetFoodList")
     public List<WetFoodViewDto> getAllToDto() {
         return productRepository.findAll().stream()
                 .flatMap(product -> product.getVariants().stream()
