@@ -1,5 +1,6 @@
 package com.example.catfoodv1.service.auth;
 
+import com.example.catfoodv1.aspect.NoLogging;
 import com.example.catfoodv1.model.dto.UserDto;
 import com.example.catfoodv1.model.entity.auth.Account;
 import com.example.catfoodv1.model.entity.auth.Role;
@@ -55,6 +56,7 @@ public class SecurityService {
      * 獲取當前登入的使用者實體（內部使用）。
      * @return 如果使用者已登入，則返回包含 User 的 Optional；否則返回空的 Optional。
      */
+    @NoLogging
     public Optional<Account> getAuthenticatedUserEntity() {
         var principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 

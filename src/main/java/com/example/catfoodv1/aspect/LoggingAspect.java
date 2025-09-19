@@ -22,9 +22,15 @@ public class LoggingAspect {
     }
 
     /**
+     * 定義一個切點，目標是所有被 @NoLogging 標記的類別或方法。
+     */
+    @Pointcut("@within(com.example.catfoodv1.aspect.NoLogging) || @annotation(com.example.catfoodv1.aspect.NoLogging)")
+    public void noLoggingAnnotation() {}
+
+    /**
      * 使用環繞通知 (Around advice) 來包裹目標方法的執行。
      */
-    @Around("serviceMethods()")
+    @Around("serviceMethods() && !noLoggingAnnotation()")
     public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
         Object[] args = joinPoint.getArgs();
         log.info("====> In  : {}, args = {}", joinPoint.getSignature().toShortString(), Arrays.toString(args));
