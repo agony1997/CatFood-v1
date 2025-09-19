@@ -6,9 +6,7 @@ package com.example.catfoodv1.model.type;
 public enum PackageUnit {
     BAG("袋"),
     CAN("罐"),
-    BOX("箱"),
-    KG("公斤"),
-    G("公克");
+    BOX("箱");
 
     public final String text;
 

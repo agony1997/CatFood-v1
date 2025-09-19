@@ -19,9 +19,8 @@ public class BaseDialog extends Dialog {
         setModal(true);
         setCloseOnEsc(false);
         setCloseOnOutsideClick(false);
-//        setWidth("25%");
-//        setMinWidth("250px");
         setHeaderTitle(title);
+        setCancelButtonDefaultEvent();
 
         if (component != null) {
             add(component);

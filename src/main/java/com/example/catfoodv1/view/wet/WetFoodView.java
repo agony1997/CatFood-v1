@@ -2,6 +2,10 @@ package com.example.catfoodv1.view.wet;
 
 import com.example.catfoodv1.model.dto.product.WetFoodViewDto;
 import com.example.catfoodv1.service.CommonService;
+import com.example.catfoodv1.service.business.BrandService;
+import com.example.catfoodv1.service.business.CompanyService;
+import com.example.catfoodv1.service.business.StoreService;
+import com.example.catfoodv1.service.product.IngredientService;
 import com.example.catfoodv1.service.product.ProductService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -27,15 +31,23 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 @RouteAlias(value = "wet-food")
 public class WetFoodView extends VerticalLayout {
     private final ProductService productService;
-    private HorizontalLayout header = new HorizontalLayout();
-    private HorizontalLayout body = new HorizontalLayout();
-    private Button createBtn = new Button(VaadinIcon.PLUS.create());
+    private final CompanyService companyService;
+    private final BrandService brandService;
+    private final StoreService storeService;
+    private final IngredientService ingredientService;
+    private final HorizontalLayout header = new HorizontalLayout();
+    private final HorizontalLayout body = new HorizontalLayout();
+    private final Button createBtn = new Button(VaadinIcon.PLUS.create());
     private CreateDialog createDialog;
     private final TreeGrid<WetFoodViewDto> grid = new TreeGrid<>(WetFoodViewDto.class, false);
     private final CommonService commonService;
 
-    public WetFoodView(ProductService productService, CommonService commonService) {
+    public WetFoodView(ProductService productService, CompanyService companyService, BrandService brandService, StoreService storeService, IngredientService ingredientService, CommonService commonService) {
         this.productService = productService;
+        this.companyService = companyService;
+        this.brandService = brandService;
+        this.storeService = storeService;
+        this.ingredientService = ingredientService;
         this.commonService = commonService;
         initGrid();
         setListener();
@@ -62,7 +74,7 @@ public class WetFoodView extends VerticalLayout {
 
     private void setListener() {
         createBtn.addClickListener(event -> {
-            createDialog = new CreateDialog("新增產品", commonService);
+            createDialog = new CreateDialog("新增罐頭", commonService, companyService, brandService, storeService, ingredientService);
             createDialog.setCancelButtonDefaultEvent();
             createDialog.setConfirmButtonEvent(() -> {
                 // add
@@ -77,11 +89,9 @@ public class WetFoodView extends VerticalLayout {
         header.add(createBtn);
         body.add(grid);
         grid.setWidthFull();
-
         setSizeFull();
         header.setWidthFull();
         body.setWidthFull();
-
         createBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
     }
 

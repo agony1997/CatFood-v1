@@ -13,4 +13,11 @@ public class CommonDto {
     private UUID id;
     private String code;
     private String name;
+    private UUID parentId;
+
+    public CommonDto(UUID id, String code, String name) {
+        this.id = id;
+        this.code = code;
+        this.name = name;
+    }
 }

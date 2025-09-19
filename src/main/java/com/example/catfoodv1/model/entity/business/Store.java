@@ -27,4 +27,10 @@ public class Store extends Auditable {
     private String storeName;
 
     private String websiteUrl;
+
+    public Store(UUID id, String storeCode, String storeName) {
+        this.id = id;
+        this.storeCode = storeCode;
+        this.storeName = storeName;
+    }
 }

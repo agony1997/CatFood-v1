@@ -32,4 +32,10 @@ public class Company extends Auditable {
 
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Brand> brands = new ArrayList<>(); // 旗下品牌
+
+    public Company(UUID id, String companyCode, String companyName) {
+        this.id = id;
+        this.companyCode = companyCode;
+        this.companyName = companyName;
+    }
 }

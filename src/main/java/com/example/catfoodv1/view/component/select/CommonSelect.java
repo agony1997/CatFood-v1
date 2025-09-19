@@ -12,6 +12,12 @@ public class CommonSelect extends Select<CommonDto> {
         setPlaceholder("選擇" + type.getLabel());
         setItems(commonService.getAll(type));
         setItemLabelGenerator(CommonDto::getName);
+        setWidthFull();
+    }
+
+    public void addItem(CommonDto dto) {
+        getListDataView().addItem(dto);
+        setValue(dto);
     }
 
 }

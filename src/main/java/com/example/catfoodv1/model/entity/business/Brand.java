@@ -39,4 +39,10 @@ public class Brand extends Auditable {
     @OneToMany(mappedBy = "brand")
     private List<Product> products = new ArrayList<>(); // 旗下產品
 
+    public Brand(UUID id, String brandCode, String brandName, Company company) {
+        this.company = company;
+        this.brandName = brandName;
+        this.brandCode = brandCode;
+        this.id = id;
+    }
 }
