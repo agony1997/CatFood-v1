@@ -35,7 +35,7 @@ public class Tag extends Auditable {
      * 欄位用途: 標籤的唯一業務代碼，用於內部識別 (例如 "GRAIN_FREE")。
      */
     @NotNull
-    @Column(unique = true, nullable = false)
+    @Column(name = "tag_code", unique = true, nullable = false)
     private String tagCode;
 
     /**
@@ -43,7 +43,7 @@ public class Tag extends Auditable {
      * 欄位用途: 標籤的顯示名稱 (例如 "無穀物")。
      */
     @NotNull
-    @Column(nullable = false)
+    @Column(name = "tag_name", nullable = false)
     private String tagName;
 
     /**

@@ -41,6 +41,7 @@ public class WetFoodViewDto {
 
     private UUID productId;
     private UUID variantId;
+    private UUID priceId; // 新增：用於存儲 ProductPriceHistory 的 ID
 
     // (價格 * 100) / 重量(g)
     public BigDecimal calculatePerPrice(Integer weight) {

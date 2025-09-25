@@ -25,10 +25,11 @@ public class Brand extends Auditable {
     private UUID id;
 
     @NotNull
-    @Column(nullable = false, unique = true)
+    @Column(name = "brand_code", nullable = false, unique = true)
     private String brandCode;
 
     @NotNull
+    @Column(name = "brand_name")
     private String brandName;
 
     @NotNull

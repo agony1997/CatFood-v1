@@ -20,12 +20,14 @@ public class Store extends Auditable {
     private UUID id;
 
     @NotNull
-    @Column(nullable = false, unique = true)
+    @Column(name = "store_code", nullable = false, unique = true)
     private String storeCode;
 
     @NotNull
+    @Column(name = "store_name")
     private String storeName;
 
+    @Column(name = "website_url")
     private String websiteUrl;
 
     public Store(UUID id, String storeCode, String storeName) {

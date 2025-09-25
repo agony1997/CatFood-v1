@@ -39,7 +39,7 @@ public abstract class Product extends Auditable {
      * 欄位用途: 產品的唯一代碼，用於業務邏輯。
      */
     @NotNull
-    @Column(nullable = false, unique = true)
+    @Column(name = "product_code", nullable = false, unique = true)
     private String productCode; // 產品代碼
 
     /**
@@ -47,6 +47,7 @@ public abstract class Product extends Auditable {
      * 欄位用途: 產品的顯示名稱。
      */
     @NotNull
+    @Column(name = "product_name")
     private String productName; // 產品名稱 例如: 鮮肉罐, 無穀田園系列
 
     /**

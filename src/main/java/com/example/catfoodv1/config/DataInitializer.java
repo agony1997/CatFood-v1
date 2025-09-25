@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@Component
+// @Component // Disabled: Data initialization is now handled by Flyway V4__insert_initial_data.sql
 @RequiredArgsConstructor
 @Profile("h2")
 public class DataInitializer implements CommandLineRunner {

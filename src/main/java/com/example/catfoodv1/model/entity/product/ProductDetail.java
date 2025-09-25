@@ -26,6 +26,7 @@ public class ProductDetail extends Auditable {
      * 欄位用途: 產品詳細資訊的唯一標識符 (UUID)。與 ProductVariant 共享主鍵。
      */
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     /**

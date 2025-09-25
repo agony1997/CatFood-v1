@@ -28,8 +28,9 @@
     </scm>
     <properties>
         <java.version>21</java.version>
-    <vaadin.version>24.4.5</vaadin.version> <!-- 建議：更新至最新的 LTS 穩定版本 -->
+    <vaadin.version>24.7.7</vaadin.version> <!-- 建議：更新至最新的 LTS 穩定版本 -->
     <snakeyaml.version>2.3</snakeyaml.version> <!-- 新增：明確指定 snakeyaml 版本以修復漏洞 -->
+    <springdoc.version>2.5.0</springdoc.version>
     </properties>
     <dependencies>
         <dependency>
@@ -43,10 +44,6 @@
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-spring-boot-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-lumo-theme</artifactId>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
@@ -90,6 +87,7 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${springdoc.version}</version>
         </dependency>
         <dependency>
             <groupId>org.flywaydb</groupId>
@@ -104,6 +102,11 @@
                 <version>${vaadin.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.vaadin</groupId>
+                <artifactId>vaadin-lumo-theme</artifactId>
+                <version>${vaadin.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -155,18 +158,17 @@
     <profiles>
         <profile>
             <id>production</id>
-            <dependencies>
-                <dependency>
-                    <groupId>com.vaadin</groupId>
-                    <artifactId>vaadin-core</artifactId>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>com.vaadin</groupId>
-                            <artifactId>vaadin-dev</artifactId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
-            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.vaadin</groupId>
+                        <artifactId>vaadin-maven-plugin</artifactId>
+                        <configuration>
+                            <productionMode>true</productionMode>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 

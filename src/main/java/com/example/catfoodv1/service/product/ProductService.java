@@ -96,6 +96,7 @@ public class ProductService {
                             WetFoodViewDto dto = new WetFoodViewDto();
                             dto.setProductId(product.getId());
                             dto.setVariantId(variant.getId());
+                            dto.setPriceId(lowestPrice.getId()); // 設置主項目的 priceId
                             dto.setBrandName(product.getBrand().getBrandName());
                             dto.setUnit(variant.getUnitOfMeasure());
                             // 組合顯示名稱
@@ -110,6 +111,9 @@ public class ProductService {
                                     .filter(ph -> !ph.getId().equals(lowestPrice.getId()))// 過濾掉最低價的那一筆
                                     .map(ph -> {
                                         WetFoodViewDto detail = new WetFoodViewDto();
+                                        detail.setProductId(product.getId());
+                                        detail.setVariantId(variant.getId());
+                                        detail.setPriceId(ph.getId()); // 設置詳細項目的 priceId
                                         detail.setBrandName(dto.getBrandName());
                                         detail.setDisplayName(dto.getDisplayName());
                                         detail.setStoreName(ph.getStore().getStoreName());

@@ -24,10 +24,11 @@ public class Company extends Auditable {
     private UUID id;
 
     @NotNull
-    @Column(nullable = false, unique = true)
+    @Column(name = "company_code", nullable = false, unique = true)
     private String companyCode;
 
     @NotNull
+    @Column(name = "company_name")
     private String companyName;
 
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -34,7 +34,7 @@ public class Ingredient extends Auditable {
      * 欄位用途: 成分的唯一業務代碼，用於內部識別 (例如 "CHICKEN", "SALMON")。
      */
     @NotNull
-    @Column(unique = true, nullable = false, length = 20)
+    @Column(name = "ingredient_code", unique = true, nullable = false, length = 20)
     private String ingredientCode; // 成分代碼，例如 "CHICKEN", "SALMON"
 
     /**
@@ -42,7 +42,7 @@ public class Ingredient extends Auditable {
      * 欄位用途: 成分的顯示名稱 (例如 "雞肉", "鮭魚")。
      */
     @NotNull
-    @Column(nullable = false)
+    @Column(name = "ingredient_name", nullable = false)
     private String ingredientName; // 成分顯示名稱，例如 "雞肉", "鮭魚"
 
 }
