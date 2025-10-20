@@ -32,4 +32,3 @@ CREATE TABLE store (
     update_dt TIMESTAMP,
     updater VARCHAR(255)
 );
-

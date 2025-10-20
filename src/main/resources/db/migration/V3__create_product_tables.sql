@@ -95,3 +95,18 @@ CREATE TABLE product_tag (
     CONSTRAINT fk_pt_tag FOREIGN KEY (tag_id) REFERENCES tag(id)
 );
 
+CREATE TABLE product_review (
+    id UUID PRIMARY KEY,
+    product_id UUID NOT NULL,
+    account_id UUID NOT NULL,
+    title VARCHAR(255),
+    rating INTEGER,
+    comment TEXT,
+    create_dt TIMESTAMP,
+    creator VARCHAR(255),
+    update_dt TIMESTAMP,
+    updater VARCHAR(255),
+    CONSTRAINT fk_review_product FOREIGN KEY (product_id) REFERENCES product(id),
+    CONSTRAINT fk_review_account FOREIGN KEY (account_id) REFERENCES account(id),
+    CONSTRAINT chk_rating CHECK (rating >= 1 AND rating <= 5)
+);
