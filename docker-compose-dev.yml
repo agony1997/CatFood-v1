@@ -1,0 +1,47 @@
+services:
+  postgres-db:
+    image: postgres:16
+    container_name: postgres-db-dev
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d catfood"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    environment:
+      POSTGRES_DB: catfood
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      # 將容器的 5432 端口映射到主機的 5432 端口
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    profiles: ["postgres"]
+
+  mysql-db:
+    image: mysql:8.0
+    container_name: mysql-db-dev
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    environment:
+      MYSQL_DATABASE: catfood
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: root_password
+    ports:
+      # 將容器的 3306 端口映射到主機的 3306 端口
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    profiles: ["mysql"]
+
+volumes:
+  postgres-data:
+  mysql-data:

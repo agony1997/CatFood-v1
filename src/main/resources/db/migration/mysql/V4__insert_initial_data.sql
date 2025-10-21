@@ -1,4 +1,4 @@
--- V4: Insert initial data from DataInitializer
+-- V4: Insert initial data (MySQL specific)
 
 -- Pre-defined UUIDs for entities to manage relationships
 -- Roles are BIGINT auto-increment, so no UUID needed.
@@ -44,19 +44,15 @@ SET @prod_monster001_id = '90a0a0a0-90a0-90a0-90a0-a0a0a0a0a002';
 SET @prod_monster002_id = '90a0a0a0-90a0-90a0-90a0-a0a0a0a0a003';
 SET @prod_monster003_id = '90a0a0a0-90a0-90a0-90a0-a0a0a0a0a004';
 SET @prod_monster004_id = '90a0a0a0-90a0-90a0-90a0-a0a0a0a0a005';
--- HeroMama products
 SET @prod_hero001_id = '90a0a0a0-90a0-90a0-90a0-a0a0a0a0a006';
 SET @prod_hero002_id = '90a0a0a0-90a0-90a0-90a0-a0a0a0a0a007';
--- 超凝小姐 products
 SET @prod_lady001_id = '90a0a0a0-90a0-90a0-90a0-a0a0a0a0a009';
 SET @prod_lady002_id = '90a0a0a0-90a0-90a0-90a0-a0a0a0a0a010';
 
 -- Product Variants
--- DogCat variants
 SET @var_turkey_can_id = 'd0a0a0a0-d0a0-d0a0-d0a0-a0a0a0a0a001';
 SET @var_turkey_box_id = 'd0a0a0a0-d0a0-d0a0-d0a0-a0a0a0a0a002';
 SET @var_beef_can_id = 'd0a0a0a0-d0a0-d0a0-d0a0-a0a0a0a0a003';
--- Monster brand variants
 SET @var_monster_salmon_can_id = 'd0a0a0a0-d0a0-d0a0-d0a0-a0a0a0a0a004';
 SET @var_monster_salmon_box_id = 'd0a0a0a0-d0a0-d0a0-d0a0-a0a0a0a0a005';
 SET @var_monster_tuna_can_id = 'd0a0a0a0-d0a0-d0a0-d0a0-a0a0a0a0a006';
@@ -65,7 +61,6 @@ SET @var_monster_deer_can_id = 'd0a0a0a0-d0a0-d0a0-d0a0-a0a0a0a0a008';
 SET @var_monster_beef_can_id = 'd0a0a0a0-d0a0-d0a0-d0a0-a0a0a0a0a009';
 SET @var_monster_lamb_can_id = 'd0a0a0a0-d0a0-d0a0-d0a0-a0a0a0a0a010';
 SET @var_monster_duck_can_id = 'd0a0a0a0-d0a0-d0a0-d0a0-a0a0a0a0a011';
--- HeroMama brand variants
 SET @var_hero_turkey_can_id = 'd0a0a0a0-d0a0-d0a0-d0a0-a0a0a0a0a012';
 SET @var_hero_chicken_can_id = 'd0a0a0a0-d0a0-d0a0-d0a0-a0a0a0a0a013';
 SET @var_hero_salmon_can_id = 'd0a0a0a0-d0a0-d0a0-d0a0-a0a0a0a0a014';

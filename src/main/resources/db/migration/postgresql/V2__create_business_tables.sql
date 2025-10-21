@@ -1,4 +1,4 @@
--- V2: Create business tables for Company, Brand, Store
+-- V2: Create business tables for Company, Brand, Store (PostgreSQL specific)
 
 CREATE TABLE company (
     id UUID PRIMARY KEY,

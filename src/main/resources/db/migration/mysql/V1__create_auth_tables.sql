@@ -1,4 +1,4 @@
--- V1: Create initial authentication and authorization tables.
+-- V1: Create initial authentication and authorization tables (MySQL specific).
 
 -- Create the 'role' table first, as 'user_roles' will reference it.
 CREATE TABLE role (
@@ -13,7 +13,7 @@ CREATE TABLE role (
 
 -- Create the 'account' table.
 CREATE TABLE account (
-    id UUID PRIMARY KEY,
+    id CHAR(36) PRIMARY KEY,
     account_code VARCHAR(255) NOT NULL UNIQUE,
     email VARCHAR(255) NOT NULL,
     display_name VARCHAR(255) NOT NULL,
@@ -26,7 +26,7 @@ CREATE TABLE account (
 
 -- Create the join table for the Many-to-Many relationship between 'account' and 'role'.
 CREATE TABLE user_roles (
-    account_id UUID NOT NULL,
+    account_id CHAR(36) NOT NULL,
     role_id BIGINT NOT NULL,
     PRIMARY KEY (account_id, role_id),
     FOREIGN KEY (account_id) REFERENCES account(id),

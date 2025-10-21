@@ -1,7 +1,7 @@
--- V3: Create product-related tables (Product, ProductVariant, ProductDetail, ProductPriceHistory, Ingredient, Tag, VariantIngredientMapping, ProductTag)
+-- V3: Create product-related tables (MySQL specific)
 
 CREATE TABLE ingredient (
-    id UUID PRIMARY KEY,
+    id CHAR(36) PRIMARY KEY,
     ingredient_code VARCHAR(20) NOT NULL UNIQUE,
     ingredient_name VARCHAR(255) NOT NULL,
     create_dt TIMESTAMP,
@@ -11,7 +11,7 @@ CREATE TABLE ingredient (
 );
 
 CREATE TABLE tag (
-    id UUID PRIMARY KEY,
+    id CHAR(36) PRIMARY KEY,
     tag_code VARCHAR(255) NOT NULL UNIQUE,
     tag_name VARCHAR(255) NOT NULL,
     create_dt TIMESTAMP,
@@ -21,10 +21,10 @@ CREATE TABLE tag (
 );
 
 CREATE TABLE product (
-    id UUID PRIMARY KEY,
+    id CHAR(36) PRIMARY KEY,
     product_code VARCHAR(255) NOT NULL UNIQUE,
     product_name VARCHAR(255) NOT NULL,
-    brand_id UUID NOT NULL,
+    brand_id CHAR(36) NOT NULL,
     product_type VARCHAR(31) NOT NULL,
     create_dt TIMESTAMP,
     creator VARCHAR(255),
@@ -34,8 +34,8 @@ CREATE TABLE product (
 );
 
 CREATE TABLE product_variant (
-    id UUID PRIMARY KEY,
-    product_id UUID NOT NULL,
+    id CHAR(36) PRIMARY KEY,
+    product_id CHAR(36) NOT NULL,
     sku VARCHAR(255) NOT NULL UNIQUE,
     variant_name VARCHAR(255),
     package_weight_grams INTEGER,
@@ -49,8 +49,8 @@ CREATE TABLE product_variant (
 );
 
 CREATE TABLE product_detail (
-    id UUID PRIMARY KEY,
-    product_variant_id UUID NOT NULL UNIQUE,
+    id CHAR(36) PRIMARY KEY,
+    product_variant_id CHAR(36) NOT NULL UNIQUE,
     ingredients TEXT,
     protein_percentage DECIMAL(5,2),
     fat_percentage DECIMAL(5,2),
@@ -65,18 +65,18 @@ CREATE TABLE product_detail (
 );
 
 CREATE TABLE variant_ingredient_mapping (
-    id UUID PRIMARY KEY,
-    product_variant_id UUID NOT NULL,
-    ingredient_id UUID NOT NULL,
+    id CHAR(36) PRIMARY KEY,
+    product_variant_id CHAR(36) NOT NULL,
+    ingredient_id CHAR(36) NOT NULL,
     ingredient_order INTEGER,
     CONSTRAINT fk_vim_variant FOREIGN KEY (product_variant_id) REFERENCES product_variant(id),
     CONSTRAINT fk_vim_ingredient FOREIGN KEY (ingredient_id) REFERENCES ingredient(id)
 );
 
 CREATE TABLE product_price_history (
-    id UUID PRIMARY KEY,
-    product_variant_id UUID NOT NULL,
-    store_id UUID,
+    id CHAR(36) PRIMARY KEY,
+    product_variant_id CHAR(36) NOT NULL,
+    store_id CHAR(36),
     price INTEGER NOT NULL,
     create_dt TIMESTAMP,
     creator VARCHAR(255),
@@ -88,17 +88,17 @@ CREATE TABLE product_price_history (
 CREATE INDEX idx_price_history_query ON product_price_history(product_variant_id, store_id, create_dt);
 
 CREATE TABLE product_tag (
-    product_id UUID NOT NULL,
-    tag_id UUID NOT NULL,
+    product_id CHAR(36) NOT NULL,
+    tag_id CHAR(36) NOT NULL,
     PRIMARY KEY (product_id, tag_id),
     CONSTRAINT fk_pt_product FOREIGN KEY (product_id) REFERENCES product(id),
     CONSTRAINT fk_pt_tag FOREIGN KEY (tag_id) REFERENCES tag(id)
 );
 
 CREATE TABLE product_review (
-    id UUID PRIMARY KEY,
-    product_id UUID NOT NULL,
-    account_id UUID NOT NULL,
+    id CHAR(36) PRIMARY KEY,
+    product_id CHAR(36) NOT NULL,
+    account_id CHAR(36) NOT NULL,
     title VARCHAR(255),
     rating INTEGER,
     comment TEXT,
