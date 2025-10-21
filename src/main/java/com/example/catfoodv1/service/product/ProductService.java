@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ProductService {
     private final ProductRepository productRepository;
-    private final ProductVariantRepository productVariantRepository;
     private final IngredientRepository ingredientRepository;
     private final StoreRepository storeRepository;
     private final BrandRepository brandRepository;
@@ -39,9 +38,7 @@ public class ProductService {
         Brand brand = brandRepository.getReferenceById(dto.getBrandId());
         Ingredient ingredient = ingredientRepository.getReferenceById(dto.getIngredientId());
         Store store = storeRepository.getReferenceById(dto.getStoreId());
-
-        // 2. 使用靜態工廠方法建立完整的產品物件圖
-        WetFood product = WetFood.create(dto, brand, ingredient, store);
+        Product product = new Product();
 
         // 3. 儲存根實體，JPA 的 `CascadeType.ALL` 會自動儲存所有關聯的子實體
         log.info("Creating new product: {}", product);
@@ -54,12 +51,7 @@ public class ProductService {
     @Transactional
     @CacheEvict(value = "wetFoodList", allEntries = true)
     public void addPriceToVariant(PriceAddDto dto) {
-        ProductVariant variant = productVariantRepository.findById(dto.getVariantId())
-                .orElseThrow(() -> new EntityNotFoundException("找不到指定的產品規格，ID: " + dto.getVariantId()));
-        Store store = storeRepository.getReferenceById(dto.getStoreId());
 
-        ProductPriceHistory newPrice = new ProductPriceHistory(variant, store, dto.getPrice());
-        variant.getPriceHistory().add(newPrice);
     }
 
     /**

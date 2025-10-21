@@ -37,7 +37,7 @@ public class ProductReview extends Auditable {
      * 欄位用途: 關聯到被評論產品的外部索引鍵。
      */
     @NotNull
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product; // 關聯的產品
 
@@ -46,7 +46,7 @@ public class ProductReview extends Auditable {
      * 欄位用途: 關聯到發表評論的使用者帳號的外部索引鍵。
      */
     @NotNull
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", nullable = false)
     private Account account; // 評論者
 

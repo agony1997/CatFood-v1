@@ -2,19 +2,12 @@ package com.example.catfoodv1.service.product;
 
 import com.example.catfoodv1.model.entity.business.Brand;
 import com.example.catfoodv1.model.entity.business.Company;
-import com.example.catfoodv1.model.entity.product.Kibble;
-import com.example.catfoodv1.model.entity.product.Product;
 import com.example.catfoodv1.repo.business.BrandRepository;
 import com.example.catfoodv1.repo.business.CompanyRepository;
 import com.example.catfoodv1.repo.product.ProductRepository;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * 這是針對 ProductService 的整合測試。

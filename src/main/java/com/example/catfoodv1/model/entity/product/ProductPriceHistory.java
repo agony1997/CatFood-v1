@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 /**
@@ -50,15 +51,10 @@ public class ProductPriceHistory extends Auditable {
 
     /**
      * 欄位名稱: price
-     * 欄位用途: 記錄的價格。
+     * 欄位用途: 記錄的價格。使用 BigDecimal 以確保精度。
      */
     @NotNull
-    @Column(nullable = false)
-    private Integer price; // 價格
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal price; // 價格
 
-    public ProductPriceHistory(ProductVariant variant, Store store, Integer price) {
-        this.variant = variant;
-        this.store = store;
-        this.price = price;
-    }
 }

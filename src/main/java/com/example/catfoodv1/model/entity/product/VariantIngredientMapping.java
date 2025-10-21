@@ -32,14 +32,14 @@ public class VariantIngredientMapping {
      * 關聯到產品規格。
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_variant_id")
+    @JoinColumn(name = "product_variant_id", nullable = false)
     private ProductVariant variant;
 
     /**
      * 關聯到成分。
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ingredient_id")
+    @JoinColumn(name = "ingredient_id", nullable = false)
     private Ingredient ingredient;
 
     /**

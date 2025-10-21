@@ -24,9 +24,9 @@ public class ProductDetail extends Auditable {
     /**
      * 欄位名稱: id
      * 欄位用途: 產品詳細資訊的唯一標識符 (UUID)。與 ProductVariant 共享主鍵。
+     * 注意: 當使用 @MapsId 時，此 ID 由關聯的 ProductVariant 提供，不應自動生成。
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     /**
@@ -42,8 +42,7 @@ public class ProductDetail extends Auditable {
      * 欄位名稱: ingredients
      * 欄位用途: 產品的詳細成分列表 (文本形式)。
      */
-    @Lob // 表示這是一個大型物件，對應資料庫的 CLOB 或 TEXT 類型
-    @Column(name = "ingredients")
+    @Column(name = "ingredients", columnDefinition = "TEXT")
     private String ingredients; // 食物成分
 
     // --- 營養分析 (Guaranteed Analysis) ---

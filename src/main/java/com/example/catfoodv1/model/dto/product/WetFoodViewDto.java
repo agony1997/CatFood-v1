@@ -33,7 +33,7 @@ public class WetFoodViewDto {
     private String displayName;
     private String storeName;
     private PackageUnit unit;
-    private Integer price;
+    private BigDecimal price;
     private BigDecimal pricePer; // 計算 : 每 100 克的價格
     private LocalDateTime updateDT;
 
@@ -48,7 +48,7 @@ public class WetFoodViewDto {
         if (price != null && weight != null && weight > 0) {
             // 正確的公式：(價格 * 100) / 重量
             // 並指定保留 2 位小數，以及使用標準的四捨五入模式
-            return this.pricePer = new BigDecimal(price).multiply(new BigDecimal("100"))
+            return this.pricePer = price.multiply(new BigDecimal("100"))
                     .divide(new BigDecimal(weight), 2, RoundingMode.HALF_UP);
         }
         return BigDecimal.ZERO;

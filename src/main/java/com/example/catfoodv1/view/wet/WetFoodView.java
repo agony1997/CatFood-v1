@@ -24,10 +24,6 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 import java.util.Comparator;
 import java.util.List;
 
-// TODO 建立罐頭 -> 新公司 -> 新品牌 -> 新TAG -> 新主成分 ->新販售處
-// TODO 可以輸入多個價格
-// TODO 成分、價格趨勢
-
 @PageTitle("咪貓罐頭")
 @AnonymousAllowed
 @Route(value = "")

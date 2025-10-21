@@ -25,7 +25,9 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
+import com.vaadin.flow.component.textfield.BigDecimalField;
 import com.vaadin.flow.component.textfield.IntegerField;
+import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
@@ -39,7 +41,7 @@ public class CreateDialog extends BaseDialog {
     // Fields
     private final TextField productNameField = new TextField("系列名");
     private final TextField flavorNameField = new TextField("口味名");
-    private final IntegerField priceField = new IntegerField("價格");
+    private final BigDecimalField priceField = new BigDecimalField("價格");
     private final IntegerField gramField = new IntegerField("單罐克數");
     private final QtySelect qtySelect = new QtySelect();
     private final UnitSelect unitSelect = new UnitSelect();
@@ -65,7 +67,6 @@ public class CreateDialog extends BaseDialog {
         storePopover.setTarget(addStoreBtn);
         ingredientPopover.setTarget(addMeatBtn);
 
-        priceField.setMin(0);
         gramField.setMin(0);
 
         addBrandBtn.addClickListener(e -> {

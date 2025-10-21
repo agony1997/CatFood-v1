@@ -26,7 +26,7 @@ public class ProductCreateDto {
 
     @NotNull(message = "價格不能為空")
     @Positive(message = "價格必須為正數")
-    private Integer price;
+    private BigDecimal price;
 
     @NotNull(message = "數量不能為空")
     @Positive(message = "數量必須為正數")
